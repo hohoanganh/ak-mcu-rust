@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = ["blink"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+debug = true
+codegen-units = 1
