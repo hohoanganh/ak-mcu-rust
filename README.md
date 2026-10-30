@@ -14,6 +14,7 @@ firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C
 | [`nut-bam/`](nut-bam/) | **Bài 3** — chờ sự kiện: đàn ba phím, `select3` chờ cả ba nút trong một dòng | Chạy trên kit (30/10/2026) |
 | [`dong-ho/`](dong-ho/) | **Bài 4** — hai task nói chuyện qua channel: đọc RTC, vẽ đồng hồ kim trên OLED | Chạy trên kit (30/10/2026) |
 | [`an-toan/`](an-toan/) | **Bài 5** — đọc vượt mảng: Rust dừng và hiện PANIC kèm tệp, số dòng lên OLED | Chạy trên kit (30/10/2026) |
+| [`cua-ferris/`](cua-ferris/) | **Bài 6** — trò chơi Ferris hứng sao: 30 khung/giây, âm thanh qua channel | Chạy trên kit, chưa chơi thử |
 
 `ak-kit/` là thư viện bo mạch dùng chung cho các bài (xung nhịp, LED, còi, OLED vẽ bằng `embedded-graphics`, ba nút
 bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng COM và lên OLED). Nạp một bài:

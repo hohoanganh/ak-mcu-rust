@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["blink", "ak-kit", "hello-async", "ba-viec-cung-luc", "nut-bam", "dong-ho", "an-toan"]
+members = ["blink", "ak-kit", "hello-async", "ba-viec-cung-luc", "nut-bam", "dong-ho", "an-toan", "cua-ferris"]
 
 [profile.release]
 opt-level = "s"
