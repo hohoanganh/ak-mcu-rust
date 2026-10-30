@@ -13,16 +13,19 @@
 //! - Cong COM: USART1 (PA9 TX, PA10 RX), 115200 8N1, qua cong COM ao cua ST-Link.
 //! - Coi: PB0 = TIM3_CH3 (`Coi::keu(tan_so, ms).await`).
 //! - Man hinh: OLED SSD1309 128x64, ve bang `embedded-graphics` (`ManHinh`).
+//! - Dong ho RTC PCF85063 tren I2C1 (PB6/PB7): `dong_ho.doc()` -> gio, phut, giay.
 //! - Nut: ▼ PB3, ▲ PC13, ⏎ PB4 (trai sang phai), `nut.cho_bam().await` bang ngat EXTI.
 //! - Panic: in thong diep kem file:dong ra cong COM roi nhay LED nhanh mai mai.
 
 #![no_std]
 
 mod coi;
+mod dong_ho;
 mod man_hinh;
 mod nut;
 
 pub use coi::Coi;
+pub use dong_ho::{DongHo, Gio, LoiDongHo};
 pub use man_hinh::ManHinh;
 pub use nut::Nut;
 
@@ -33,6 +36,7 @@ use core::panic::PanicInfo;
 use critical_section::Mutex;
 use embassy_stm32::exti::{self, ExtiInput};
 use embassy_stm32::gpio::{Flex, Level, Output, OutputType, Pull, Speed};
+use embassy_stm32::i2c::{self, I2c};
 use embassy_stm32::{bind_interrupts, interrupt};
 use embassy_stm32::mode::Blocking;
 use embassy_stm32::time::hz;
@@ -45,6 +49,8 @@ pub struct Kit {
     pub led: Led,
     pub coi: Coi,
     pub man_hinh: ManHinh,
+    /// Dong ho thoi gian thuc PCF85063
+    pub dong_ho: DongHo,
     /// Nut trai, in hinh ▼ (PB3)
     pub nut_xuong: Nut,
     /// Nut giua, in hinh ▲ (PC13) — giu nut nay khi bam RESET de vao che do nap
@@ -140,7 +146,13 @@ pub fn init() -> Kit {
     let nut_len = Nut::new(ExtiInput::new(p.PC13, p.EXTI13, Pull::Up, NgatNut));
     let nut_ok = Nut::new(ExtiInput::new(p.PB4, p.EXTI4, Pull::Up, NgatNut));
 
-    Kit { led, coi, man_hinh, nut_xuong, nut_len, nut_ok }
+    let mut cau_hinh_i2c = i2c::Config::default();
+    cau_hinh_i2c.frequency = hz(100_000);
+    cau_hinh_i2c.scl_pullup = true;
+    cau_hinh_i2c.sda_pullup = true;
+    let dong_ho = DongHo::new(I2c::new_blocking(p.I2C1, p.PB6, p.PB7, cau_hinh_i2c));
+
+    Kit { led, coi, man_hinh, dong_ho, nut_xuong, nut_len, nut_ok }
 }
 
 // Cho ban (chi dung luc khoi tao, truoc khi co task nao chay). 32 MHz.

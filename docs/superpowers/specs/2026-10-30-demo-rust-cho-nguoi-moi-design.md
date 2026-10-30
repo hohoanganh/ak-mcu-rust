@@ -19,7 +19,7 @@ Không làm trong chuỗi này: OTA cho app Rust (giai đoạn 3 của `docs/lo-
 | 1 | `hello-async` | Chờ mà không chặn | LED nháy + dòng chào trên cổng COM |
 | 2 | `ba-viec-cung-luc` | 3 việc cùng lúc, không cần RTOS | LED, còi, bộ đếm OLED chạy ba nhịp khác nhau |
 | 3 | `nut-bam` | Chờ sự kiện, CPU được nghỉ | 3 nút → LED / còi / OLED phản hồi tức thì |
-| 4 | `cam-bien` | Các task nói chuyện qua channel (như message của kernel AK) | SHT45: số + đồ thị nhiệt độ, độ ẩm trên OLED |
+| 4 | `dong-ho` | Các task nói chuyện qua channel (như message của kernel AK) | RTC PCF85063: đồng hồ kim + giờ số trên OLED (đổi từ SHT45 ngày 30/10/2026: kit không gắn SHT45) |
 | 5 | `an-toan` | Lỗi C âm thầm hỏng bộ nhớ, Rust dừng và chỉ đúng dòng | Bấm nút đọc vượt mảng → OLED hiện `panic` kèm tên file, số dòng |
 | 6 | `cua-ferris` | Rust vẽ mượt trên chip 32 MHz | Chú cua Ferris (hình pixel tự vẽ) chạy trên OLED, nút điều khiển, còi kêu |
 

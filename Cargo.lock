@@ -239,6 +239,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dong-ho"
+version = "0.1.0"
+dependencies = [
+ "ak-kit",
+ "cortex-m-rt",
+ "embassy-executor",
+ "embassy-sync",
+ "embassy-time",
+ "embedded-graphics",
+ "heapless",
+ "micromath",
+]
+
+[[package]]
 name = "embassy-embedded-hal"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
