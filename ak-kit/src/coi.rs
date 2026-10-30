@@ -1,8 +1,8 @@
 //! Coi thu dong tren PB0 = TIM3_CH3: phat tieng bang song vuong (PWM).
 //!
 //! Do to theo do rong xung: 50 % la to nhat, nho hon thi nho dan.
-//! Mac dinh 1 % (nho nhat con nghe duoc) cho do on khi ngoi canh kit;
-//! `dat_am_luong(0)` tat han, `dat_am_luong(50)` to nhat (vi du khi quay clip).
+//! Mac dinh TAT (0) cho yen khi ngoi lam viec canh kit. Muon nghe:
+//! `dat_am_luong(1)` nho nhat ... `dat_am_luong(50)` to nhat (vi du khi quay clip).
 
 use embassy_stm32::peripherals::TIM3;
 use embassy_stm32::time::hz;
@@ -16,12 +16,12 @@ pub struct Coi {
 
 impl Coi {
     pub(crate) fn new(pwm: SimplePwm<'static, TIM3>) -> Self {
-        let mut coi = Coi { pwm, am_luong: 1 };
+        let mut coi = Coi { pwm, am_luong: 0 };
         coi.tat();
         coi
     }
 
-    /// Am luong 0..50 (do rong xung %): 0 = tat, 50 = to nhat. Mac dinh 1.
+    /// Am luong 0..50 (do rong xung %): 0 = tat, 50 = to nhat. Mac dinh 0 (tat).
     pub fn dat_am_luong(&mut self, phan_tram: u8) {
         self.am_luong = phan_tram.min(50);
     }

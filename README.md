@@ -23,6 +23,9 @@ Mọi bài dưới đây đã chạy trên kit (30/10/2026).
 bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng COM và lên OLED). Nạp một bài:
 `python tools/nap.py <tên-bài>`. Thiết kế chuỗi bài: [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
+**Còi mặc định tắt** cho yên khi làm việc cạnh kit. Bài có tiếng (2, 3, 6) muốn nghe — ví dụ khi quay clip — thì thêm
+`kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init()` (1 = nhỏ nhất, 50 = to nhất).
+
 `tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.
 
 Các bước tiếp theo (OTA cho app Rust, trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
