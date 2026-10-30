@@ -11,9 +11,10 @@ firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C
 | [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash | Chạy trên kit (30/10/2026) |
 | [`hello-async/`](hello-async/) | **Bài 1** — chờ mà không chặn: LED nháy và đếm giây cùng lúc bằng Embassy async | Chạy trên kit (30/10/2026) |
 | [`ba-viec-cung-luc/`](ba-viec-cung-luc/) | **Bài 2** — ba việc cùng lúc: LED, còi, đồng hồ trên OLED, ba nhịp khác nhau | Chạy trên kit (30/10/2026) |
+| [`nut-bam/`](nut-bam/) | **Bài 3** — chờ sự kiện: đàn ba phím, `select3` chờ cả ba nút trong một dòng | Nạp được, chưa kiểm bấm nút |
 
-`ak-kit/` là thư viện bo mạch dùng chung cho các bài (xung nhịp, LED, còi, OLED vẽ bằng `embedded-graphics`, `in_ra!`,
-panic in file:dòng). Nạp một bài:
+`ak-kit/` là thư viện bo mạch dùng chung cho các bài (xung nhịp, LED, còi, OLED vẽ bằng `embedded-graphics`, ba nút
+bằng ngắt EXTI, `in_ra!`, panic in file:dòng). Nạp một bài:
 `python tools/nap.py <tên-bài>`. Thiết kế chuỗi bài: [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
 `tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.

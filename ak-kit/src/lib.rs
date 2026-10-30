@@ -13,22 +13,27 @@
 //! - Cong COM: USART1 (PA9 TX, PA10 RX), 115200 8N1, qua cong COM ao cua ST-Link.
 //! - Coi: PB0 = TIM3_CH3 (`Coi::keu(tan_so, ms).await`).
 //! - Man hinh: OLED SSD1309 128x64, ve bang `embedded-graphics` (`ManHinh`).
+//! - Nut: ▼ PB3, ▲ PC13, ⏎ PB4 (trai sang phai), `nut.cho_bam().await` bang ngat EXTI.
 //! - Panic: in thong diep kem file:dong ra cong COM roi nhay LED nhanh mai mai.
 
 #![no_std]
 
 mod coi;
 mod man_hinh;
+mod nut;
 
 pub use coi::Coi;
 pub use man_hinh::ManHinh;
+pub use nut::Nut;
 
 use core::cell::RefCell;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 
 use critical_section::Mutex;
-use embassy_stm32::gpio::{Flex, Level, Output, OutputType, Speed};
+use embassy_stm32::exti::{self, ExtiInput};
+use embassy_stm32::gpio::{Flex, Level, Output, OutputType, Pull, Speed};
+use embassy_stm32::{bind_interrupts, interrupt};
 use embassy_stm32::mode::Blocking;
 use embassy_stm32::time::hz;
 use embassy_stm32::timer::low_level::CountingMode;
@@ -40,7 +45,19 @@ pub struct Kit {
     pub led: Led,
     pub coi: Coi,
     pub man_hinh: ManHinh,
+    /// Nut trai, in hinh ▼ (PB3)
+    pub nut_xuong: Nut,
+    /// Nut giua, in hinh ▲ (PC13) — giu nut nay khi bam RESET de vao che do nap
+    pub nut_len: Nut,
+    /// Nut phai, in hinh ⏎ (PB4)
+    pub nut_ok: Nut,
 }
+
+bind_interrupts!(struct NgatNut {
+    EXTI3 => exti::InterruptHandler<interrupt::typelevel::EXTI3>;
+    EXTI4 => exti::InterruptHandler<interrupt::typelevel::EXTI4>;
+    EXTI15_10 => exti::InterruptHandler<interrupt::typelevel::EXTI15_10>;
+});
 
 /// LED tren kit (PB8).
 pub struct Led {
@@ -119,7 +136,11 @@ pub fn init() -> Kit {
         }
     }
 
-    Kit { led, coi, man_hinh }
+    let nut_xuong = Nut::new(ExtiInput::new(p.PB3, p.EXTI3, Pull::Up, NgatNut));
+    let nut_len = Nut::new(ExtiInput::new(p.PC13, p.EXTI13, Pull::Up, NgatNut));
+    let nut_ok = Nut::new(ExtiInput::new(p.PB4, p.EXTI4, Pull::Up, NgatNut));
+
+    Kit { led, coi, man_hinh, nut_xuong, nut_len, nut_ok }
 }
 
 // Cho ban (chi dung luc khoi tao, truoc khi co task nao chay). 32 MHz.
