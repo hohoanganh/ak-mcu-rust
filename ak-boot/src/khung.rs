@@ -67,6 +67,20 @@ impl BoTach {
         }
     }
 
+    /// Dang o giua mot khung (giong `fw_proto_busy()` cua C).
+    pub fn dang_trong_khung(&self) -> bool {
+        self.buoc != Buoc::Sof
+    }
+
+    /// Byte `b` den luc `bay_gio_ms` co thuoc giao thuc khong — goi TRUOC `nap()`.
+    /// Giong gia tri tra ve cua `fw_proto_feed()` ban C: dang giua khung (chua het gio)
+    /// thi moi byte deu thuoc khung, ke ca byte CRC sai hay byte do dai qua lon; con lai
+    /// chi byte A5 mo dau mot khung moi. Byte khong thuoc khung la cua shell.
+    pub fn byte_thuoc_khung(&self, b: u8, bay_gio_ms: u32) -> bool {
+        let het_gio = bay_gio_ms.wrapping_sub(self.lan_cuoi_ms) > HET_GIO_MS;
+        (self.buoc != Buoc::Sof && !het_gio) || b == SOF
+    }
+
     pub fn nap(&mut self, b: u8, bay_gio_ms: u32) -> Option<Khung> {
         if self.buoc != Buoc::Sof && bay_gio_ms.wrapping_sub(self.lan_cuoi_ms) > HET_GIO_MS {
             self.buoc = Buoc::Sof; // khung bi ngat giua chung
@@ -183,6 +197,42 @@ mod tests {
         let mut byte = b"help\r\n".to_vec();
         byte.extend_from_slice(&ra[..n]);
         assert_eq!(tach_het(&mut BoTach::new(), &byte, 0).unwrap().seq, 3);
+    }
+
+    #[test]
+    fn byte_ngoai_khung_de_cho_shell() {
+        // Nhu fw_proto_feed() cua C: byte truoc khi het gio thi thuoc khung; het gio roi thi
+        // byte khong phai A5 la cua shell.
+        let mut bo = BoTach::new();
+        assert!(!bo.dang_trong_khung());
+        bo.nap(b'h', 0);
+        assert!(!bo.dang_trong_khung()); // chu thuong: shell
+        bo.nap(SOF, 1);
+        assert!(bo.dang_trong_khung());
+        bo.nap(b'x', 700); // het gio giua khung: bo khung, 'x' la cua shell
+        assert!(!bo.dang_trong_khung());
+    }
+
+    #[test]
+    fn byte_thuoc_khung_nhu_fw_proto_feed() {
+        let mut ra = [0u8; 16];
+        let n = dong_goi(CMD_INFO, 1, &[], &mut ra);
+        ra[n - 1] ^= 0xFF; // CRC sai
+        let mut bo = BoTach::new();
+        for (i, &b) in ra[..n].iter().enumerate() {
+            assert!(bo.byte_thuoc_khung(b, i as u32), "byte {} cua khung CRC sai", i);
+            assert!(bo.nap(b, i as u32).is_none());
+        }
+        // khung khai do dai qua lon: ca byte do dai cao van thuoc khung
+        let qua_dai = [SOF, 3, 1, 0xFF, 0x7F];
+        for (i, &b) in qua_dai.iter().enumerate() {
+            assert!(bo.byte_thuoc_khung(b, 10 + i as u32));
+            bo.nap(b, 10 + i as u32);
+        }
+        assert!(!bo.dang_trong_khung());
+        assert!(!bo.byte_thuoc_khung(b'h', 20)); // sau do: chu thuong cua shell
+        bo.nap(SOF, 21);
+        assert!(!bo.byte_thuoc_khung(b'x', 700)); // het gio giua khung: cua shell
     }
 
     #[test]

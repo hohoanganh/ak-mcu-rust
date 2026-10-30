@@ -1,0 +1,12 @@
+[package]
+name = "ak-ffi"
+version = "0.1.0"
+edition = "2021"
+description = "Thu vien tinh cho firmware C cua ak-mcu-base: bo tach khung fw_proto viet bang Rust"
+
+[lib]
+crate-type = ["staticlib"]
+test = false
+
+[dependencies]
+ak-boot = { path = "../ak-boot" }

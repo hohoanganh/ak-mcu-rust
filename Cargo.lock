@@ -19,6 +19,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "ak-ffi"
+version = "0.1.0"
+dependencies = [
+ "ak-boot",
+]
+
+[[package]]
 name = "ak-kit"
 version = "0.1.0"
 dependencies = [
