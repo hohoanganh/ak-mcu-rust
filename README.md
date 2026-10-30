@@ -12,6 +12,8 @@ firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C
 
 `tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.
 
+Các bước tiếp theo (Embassy, OTA cho app Rust, trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
+
 ## Cần cài
 
 - Rust (`rustup`) và target Cortex-M3: `rustup target add thumbv7m-none-eabi`
