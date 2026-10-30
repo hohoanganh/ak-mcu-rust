@@ -4,7 +4,7 @@ Ghi chú cho Claude khi làm việc trong repo này. Trả lời và viết tài
 
 ## Repo này là gì
 
-Thử nghiệm firmware Rust trên AK MCU KIT (STM32L151), **chạy sau bootloader của
+Firmware Rust trên AK MCU KIT (STM32L151), **chạy sau bootloader của
 [ak-mcu-base](https://github.com/hohoanganh/ak-mcu-base)**. Không thay ak-mcu-base: kit phải luôn quay về được firmware
 C bằng cách nạp lại `app.img` của bản C. Lộ trình: `docs/lo-trinh.md`.
 
@@ -18,7 +18,7 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
   `cortex-m-rt` và tự khai `__INTERRUPTS: [usize; 45]` (`blink/src/main.rs`, `device.x` để trống).
 - **PAC `stm32l1` (feature `stm32l151`) không cứu được:** nó khai bảng ngắt theo dòng dung lượng lớn, bảng vẫn vượt
   256 B. Theo dữ liệu chip của embassy (`stm32-data-generated`), cả `STM32L151CB` lẫn `STM32L151CB-A` có đúng
-  **45 ngắt** → `embassy-stm32` với feature chip đúng sẽ ra bảng 244 B (chưa kiểm bằng build).
+  **45 ngắt** → `embassy-stm32` với feature `stm32l151cb-a` ra bảng 244 B (đã kiểm: mọi bài Embassy chạy ở `0x08003100`).
 - **RAM bắt đầu `0x20000100`.** Đầu RAM là `.noinit` của bootloader (52 B: lệnh nhảy, lý do reset, bản ghi sự cố);
   bootloader đọc nó sau mỗi reset. Đừng để `.data`/`.bss`/stack của Rust đè lên.
 - **Ảnh phải có header 256 B:** `tools/mkimage.py build <bin> --load-addr 0x08003100 --board ak-l151`. Ảnh trần hay sai

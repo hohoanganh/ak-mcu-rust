@@ -1,6 +1,7 @@
 # Lộ trình Rust trên AK MCU KIT
 
-> Viết 30/10/2026, sau khi `blink/` build được (chưa chạy trên kit). Mỗi giai đoạn có **cổng quyết định**: chỉ đi
+> Viết 30/10/2026, lúc mới có `blink/`. Cùng ngày giai đoạn 0–2 đã xong: Embassy chạy sau bootloader, kit có 32 KB
+> RAM, chuỗi bài 1–6 chạy trên kit. Mỗi giai đoạn có **cổng quyết định**: chỉ đi
 > tiếp khi giai đoạn trước có số đo trên kit thật, không đi tiếp vì "đã lên kế hoạch".
 
 ## Mục tiêu và thứ không làm

@@ -1,20 +1,23 @@
-# ak-mcu-rust — thử firmware Rust trên AK MCU KIT
+# ak-mcu-rust — firmware Rust trên AK MCU KIT
 
-Các thử nghiệm viết firmware bằng Rust cho AK MCU KIT (STM32L151CB-A: 128 KB flash, 32 KB RAM, 32 MHz), chạy **sau
+Firmware viết bằng Rust cho AK MCU KIT (STM32L151CB-A: 128 KB flash, 32 KB RAM, 32 MHz), chạy **sau
 bootloader của [ak-mcu-base](https://github.com/hohoanganh/ak-mcu-base)**: không đè bootloader, nên kit vẫn quay về
 firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C.
 
-Đây là chỗ học và đo xem Rust làm được tới đâu trên chip nhỏ, không phải bản thay thế cho ak-mcu-base.
+Gồm một chuỗi bài cho người mới học Rust nhúng (mỗi bài một ý, mã ngắn đủ chiếu lên clip) và thư viện bo mạch `ak-kit`
+dùng chung. Không thay thế ak-mcu-base: kernel AK, bootloader và OTA vẫn là bản C.
 
-| Thư mục | Nội dung | Trạng thái |
-|---|---|---|
-| [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash | Chạy trên kit (30/10/2026) |
-| [`hello-async/`](hello-async/) | **Bài 1** — chờ mà không chặn: LED nháy và đếm giây cùng lúc bằng Embassy async | Chạy trên kit (30/10/2026) |
-| [`ba-viec-cung-luc/`](ba-viec-cung-luc/) | **Bài 2** — ba việc cùng lúc: LED, còi, đồng hồ trên OLED, ba nhịp khác nhau | Chạy trên kit (30/10/2026) |
-| [`nut-bam/`](nut-bam/) | **Bài 3** — chờ sự kiện: đàn ba phím, `select3` chờ cả ba nút trong một dòng | Chạy trên kit (30/10/2026) |
-| [`dong-ho/`](dong-ho/) | **Bài 4** — hai task nói chuyện qua channel: đọc RTC, vẽ đồng hồ kim trên OLED | Chạy trên kit (30/10/2026) |
-| [`an-toan/`](an-toan/) | **Bài 5** — đọc vượt mảng: Rust dừng và hiện PANIC kèm tệp, số dòng lên OLED | Chạy trên kit (30/10/2026) |
-| [`cua-ferris/`](cua-ferris/) | **Bài 6** — trò chơi Ferris hứng sao: 30 khung/giây, âm thanh qua channel | Chạy trên kit, chưa chơi thử |
+Mọi bài dưới đây đã chạy trên kit (30/10/2026).
+
+| Thư mục | Nội dung |
+|---|---|
+| [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash |
+| [`hello-async/`](hello-async/) | **Bài 1** — chờ mà không chặn: LED nháy và đếm giây cùng lúc bằng Embassy async |
+| [`ba-viec-cung-luc/`](ba-viec-cung-luc/) | **Bài 2** — ba việc cùng lúc: LED, còi, đồng hồ trên OLED, ba nhịp khác nhau |
+| [`nut-bam/`](nut-bam/) | **Bài 3** — chờ sự kiện: đàn ba phím, `select3` chờ cả ba nút trong một dòng |
+| [`dong-ho/`](dong-ho/) | **Bài 4** — hai task nói chuyện qua channel: đọc RTC, vẽ đồng hồ kim trên OLED |
+| [`an-toan/`](an-toan/) | **Bài 5** — đọc vượt mảng: Rust dừng và hiện PANIC kèm tệp, số dòng lên OLED |
+| [`cua-ferris/`](cua-ferris/) | **Bài 6** — trò chơi Ferris hứng sao: 30 khung/giây, âm thanh qua channel |
 
 `ak-kit/` là thư viện bo mạch dùng chung cho các bài (xung nhịp, LED, còi, OLED vẽ bằng `embedded-graphics`, ba nút
 bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng COM và lên OLED). Nạp một bài:
@@ -22,7 +25,7 @@ bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng C
 
 `tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.
 
-Các bước tiếp theo (Embassy, OTA cho app Rust, trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
+Các bước tiếp theo (OTA cho app Rust, trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
 
 ## Cần cài
 

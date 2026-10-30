@@ -1,4 +1,4 @@
-# Thử firmware Rust trên AK MCU KIT: nháy LED
+# Bài 0 — Nháy LED bằng thanh ghi
 
 Chương trình Rust nhỏ nhất chạy được **sau bootloader ak-mcu-base** (không đè bootloader, giữ nguyên OTA cho các
 bản C về sau). Mục đích là học và đo: Rust chạy cùng bootloader hiện có được tới đâu, không phải để thay firmware C.

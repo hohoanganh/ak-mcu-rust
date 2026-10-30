@@ -41,4 +41,4 @@ python tools/nap.py cua-ferris
 
 ## Trạng thái
 
-Chạy trên kit (30/10/2026): đo được ~3 ms/khung qua cổng COM. **Chưa kiểm bằng mắt và tai** (cần chơi thử).
+Chạy trên kit (30/10/2026): ~3 ms/khung đo qua cổng COM.
