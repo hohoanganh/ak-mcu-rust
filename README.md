@@ -20,22 +20,36 @@ Mọi bài dưới đây đã chạy trên kit (30/10/2026).
 | [`cua-ferris/`](cua-ferris/) | **Bài 6** — trò chơi Ferris hứng sao: 30 khung/giây, âm thanh qua channel |
 
 `ak-kit/` là thư viện bo mạch dùng chung cho các bài (xung nhịp, LED, còi, OLED vẽ bằng `embedded-graphics`, ba nút
-bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng COM và lên OLED). Nạp một bài:
-`python tools/nap.py <tên-bài>`. Thiết kế chuỗi bài: [`docs/superpowers/specs/`](docs/superpowers/specs/).
+bằng ngắt EXTI, đồng hồ RTC, `in_ra!`, panic in tệp:dòng ra cổng COM và lên OLED, nghe lệnh nạp trên cổng COM).
+Thiết kế chuỗi bài: [`docs/superpowers/specs/`](docs/superpowers/specs/).
+
+## Nạp
+
+```bash
+python tools/nap.py <tên-bài> --com COM14   # qua cổng COM ảo của ST-Link — không cần nối SWD
+python tools/nap.py <tên-bài>               # qua ST-Link (SWD)
+```
+
+Qua cổng COM: chương trình đang chạy (bài Rust nào cũng được, app C của ak-mcu-base cũng được) nhận lệnh LOADER,
+kit vào bootloader, `tools/ak_fw.py` gửi ảnh, bootloader cài. Ảnh mới chạy thử: sau 30 s bài Rust tự xác nhận với
+bootloader; nếu nó hỏng trước đó, sau 3 lần khởi động bootloader cài lại ảnh trước. Bài 2 (32 KB): ~9 s cả quy trình.
+Lần đầu chuyển từ bài Rust cũ (trước khi có phần nghe lệnh nạp) thì phải dùng ST-Link một lần.
 
 **Còi mặc định tắt** cho yên khi làm việc cạnh kit. Bài có tiếng (2, 3, 6) muốn nghe — ví dụ khi quay clip — thì thêm
-`kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init()` (1 = nhỏ nhất, 50 = to nhất).
+`kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init(spawner)` (1 = nhỏ nhất, 50 = to nhất).
 
-`tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.
+`tools/mkimage.py` và `tools/ak_fw.py` là bản sao từ ak-mcu-base (gắn header ảnh, giao thức nạp `fw_proto`).
+`ak-boot/` là phần logic để bài Rust sống chung bootloader (`boot_ctrl` trong EEPROM, khung `fw_proto`, CRC), không
+phụ thuộc chip: `cargo test -p ak-boot --target x86_64-pc-windows-gnu` (12 test, có đọc EEPROM thật dump từ kit).
 
-Các bước tiếp theo (OTA cho app Rust, trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
+Bước tiếp theo (trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
 
 ## Cần cài
 
 - Rust (`rustup`) và target Cortex-M3: `rustup target add thumbv7m-none-eabi`
 - `arm-none-eabi-objcopy` (có sẵn trong toolchain ARM của PlatformIO hoặc STM32CubeIDE)
-- Python 3 cho `tools/mkimage.py`
-- STM32CubeProgrammer và đầu dò ST-Link để nạp
+- Python 3 (+ `pyserial`) cho `tools/mkimage.py`, `tools/ak_fw.py`
+- STM32CubeProgrammer và đầu dò ST-Link để nạp lần đầu
 
 Build cả workspace: `cargo build --release` ở thư mục gốc; output nằm ở `target/thumbv7m-none-eabi/release/`.
 Cách gắn header và nạp: xem README của từng thư mục.

@@ -26,7 +26,7 @@ static KENH: Channel<CriticalSectionRawMutex, Gio, 4> = Channel::new();
 
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
 async fn main(spawner: Spawner) {
-    let kit = ak_kit::init();
+    let kit = ak_kit::init(spawner);
     spawner.spawn(doc_dong_ho(kit.dong_ho).unwrap());
     spawner.spawn(hien_thi(kit.man_hinh).unwrap());
 }

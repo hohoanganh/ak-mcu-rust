@@ -5,7 +5,9 @@ edition = "2021"
 description = "Bo mach AK MCU KIT cho cac bai demo Rust: xung nhip, LED, cong COM, panic"
 
 [dependencies]
-embassy-stm32 = { version = "0.6.0", features = ["stm32l151cb-a", "time-driver-tim2", "exti"] }
+ak-boot = { path = "../ak-boot" }
+embassy-executor = "0.10.0"
+embassy-stm32 = { version = "0.6.0", features = ["stm32l151cb-a", "time-driver-tim2", "exti", "unstable-pac"] }
 embassy-time = { version = "0.5.1", features = ["tick-hz-32_768"] }
 cortex-m = { version = "0.7.6", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7"

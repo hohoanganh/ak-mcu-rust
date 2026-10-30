@@ -1,0 +1,8 @@
+[package]
+name = "ak-boot"
+version = "0.1.0"
+edition = "2021"
+description = "Phan logic de app Rust song chung bootloader ak-mcu-base: boot_ctrl trong EEPROM, khung fw_proto, CRC. Khong phu thuoc chip, test duoc tren may tinh."
+
+[dependencies]
+heapless = "0.9.3"

@@ -15,7 +15,7 @@ use embassy_time::Timer;
 // luon nap lai duoc (dau do cua kit khong co chan NRST).
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
 async fn main(spawner: Spawner) {
-    let kit = ak_kit::init();
+    let kit = ak_kit::init(spawner);
     in_ra!("Xin chao tu Embassy! (Rust async tren AK MCU KIT)");
 
     // Viec 1: giao LED cho mot task rieng

@@ -22,6 +22,7 @@
 mod coi;
 mod dong_ho;
 mod man_hinh;
+mod nap;
 mod nut;
 
 pub use coi::Coi;
@@ -42,7 +43,9 @@ use embassy_stm32::mode::Blocking;
 use embassy_stm32::time::hz;
 use embassy_stm32::timer::low_level::CountingMode;
 use embassy_stm32::timer::simple_pwm::{PwmPin, SimplePwm};
-use embassy_stm32::usart::{self, UartTx};
+use embassy_executor::Spawner;
+use embassy_stm32::flash::Flash;
+use embassy_stm32::usart::{self, Uart, UartTx};
 
 /// Phan cung cua kit da khoi tao xong.
 pub struct Kit {
@@ -58,6 +61,10 @@ pub struct Kit {
     /// Nut phai, in hinh ⏎ (PB4)
     pub nut_ok: Nut,
 }
+
+bind_interrupts!(struct NgatCom {
+    USART1 => nap::NgatNhan;
+});
 
 bind_interrupts!(struct NgatNut {
     EXTI3 => exti::InterruptHandler<interrupt::typelevel::EXTI3>;
@@ -90,7 +97,7 @@ static CONG_COM: Mutex<RefCell<Option<UartTx<'static, Blocking>>>> = Mutex::new(
 ///
 /// Giu nut giua (PC13) trong luc bam RESET: chuong trinh dung o `che_do_nap()`,
 /// khong chay Embassy, de ST-Link luon ket noi duoc ma nap lai.
-pub fn init() -> Kit {
+pub fn init(spawner: Spawner) -> Kit {
     if nut_giua_dang_giu() {
         che_do_nap();
     }
@@ -110,8 +117,12 @@ pub fn init() -> Kit {
 
     let led = Led { chan: Output::new(p.PB8, Level::High, Speed::Low) };
 
-    let tx = UartTx::new_blocking(p.USART1, p.PA9, usart::Config::default()).unwrap();
+    let (tx, rx) = Uart::new_blocking(p.USART1, p.PA10, p.PA9, usart::Config::default()).unwrap().split();
+    core::mem::forget(rx); // giu RX bat; byte nhan di qua ngat cua nap.rs
     critical_section::with(|cs| CONG_COM.borrow(cs).replace(Some(tx)));
+    // Nghe lenh nap tren cong COM: cap nhat bai bang tools/nap.py --com, khong can ST-Link
+    nap::bat_ngat_nhan();
+    spawner.spawn(nap::nghe_lenh_nap(Flash::new_blocking(p.FLASH)).unwrap());
 
     let pwm = SimplePwm::new(
         p.TIM3,
@@ -191,6 +202,15 @@ fn che_do_nap() -> ! {
             cortex_m::asm::delay(1_800_000); // ~900 ms
         }
     }
+}
+
+// Gui byte tho ra cong COM (cau tra loi cua giao thuc nap).
+pub(crate) fn _gui_byte(byte: &[u8]) {
+    critical_section::with(|cs| {
+        if let Some(tx) = CONG_COM.borrow(cs).borrow_mut().as_mut() {
+            let _ = tx.blocking_write(byte);
+        }
+    });
 }
 
 #[doc(hidden)]

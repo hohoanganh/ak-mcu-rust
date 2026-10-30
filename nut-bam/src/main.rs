@@ -18,8 +18,8 @@ use embedded_graphics::prelude::*;
 use embedded_graphics::text::Text;
 
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
-async fn main(_spawner: Spawner) {
-    let mut kit = ak_kit::init();
+async fn main(spawner: Spawner) {
+    let mut kit = ak_kit::init(spawner);
     let mut so_lan: u32 = 0;
     ve(&mut kit.man_hinh, "BAM NUT", so_lan);
 

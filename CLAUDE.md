@@ -50,12 +50,19 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 - Embassy 0.6.0 (crates.io) đặt tên enum theo PAC: `PllSource::HSI`, `PllMul::MUL6`, `PllDiv::DIV3`, `Sysclk::PLL1_R`
   (ví dụ trên nhánh chính của repo embassy viết `Hsi`, `Mul6`…). Macro `main` cần `cortex-m-rt` là phụ thuộc trực tiếp.
 
+- **USART của L151 chỉ giữ 1 byte nhận.** Task hỏi thanh ghi RX sẽ mất byte khi task khác bận (vẽ OLED tới 25 ms).
+  `ak-kit/src/nap.rs` nhận bằng ngắt RXNE (handler riêng qua `bind_interrupts!`) vào hàng đợi 256 B; phía gửi vẫn chặn,
+  vì `in_ra!` ghi trong critical section và panic chạy khi đã tắt ngắt — `BufferedUart` (gửi bằng ngắt) sẽ treo ở đó.
+- `ak_kit::init(spawner)` tự chạy task nghe lệnh nạp; INFO trả `staging 0` — bài Rust không nhận ảnh khi đang chạy,
+  phải `ak_fw.py loader` trước (`nap.py --com` làm sẵn). Flash dùng kiểu `flash::Blocking`, khác `mode::Blocking`.
+
 ## Build, nạp
 
 - Máy `VTNN Tu Cang`: Rust ở `D:\devcache\cargo` (toolchain `stable-x86_64-pc-windows-gnu`, target
   `thumbv7m-none-eabi`); `arm-none-eabi-objcopy` lấy từ `D:\devcache\platformio\packages\toolchain-gccarmnoneeabi\bin`.
   Repo nằm ở `D:\dev\ak-mcu-rust` — ngoài OneDrive.
-- Nạp một bài: `python tools/nap.py <bài>` (build → `.bin` → header → ST-Link `mode=UR … -rst`); `--chi-build` để chỉ build.
+- Nạp một bài: `python tools/nap.py <bài> --com COM14` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link
+  `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot --target x86_64-pc-windows-gnu`.
 - Nạp tay: `STM32_Programmer_CLI -c port=SWD mode=UR -d blink.img 0x08003000 -v -rst`. Đầu dò ST-Link tự thiết kế không có
   NRST/SWO; `mode=HOTPLUG` báo `Unable to get core ID` trên kit đang chạy, `mode=UR` thì được. Gặp
   `Cannot identify the device` khi đổi đầu dò → kiểm firmware đầu dò trước (cần ≥ V2J48M35).

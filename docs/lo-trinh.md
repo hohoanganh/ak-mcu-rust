@@ -46,7 +46,10 @@
 **Cổng:** bảng vector ≤ 256 B (kiểm bằng `arm-none-eabi-nm`), app Embassy chạy sau bootloader, tốn RAM bao nhiêu.
 RAM quá 50 % (trên 16 KB) thì cân nhắc dừng Embassy ở mức thử nghiệm.
 
-### 3. Làm "công dân" của bootloader (2–3 ngày) — giai đoạn quan trọng nhất
+### 3. Làm "công dân" của bootloader — **xong (30/10/2026)**
+> `ak-boot` (12 test trên máy tính) + task nghe lệnh nạp trong `ak-kit` + `tools/nap.py --com`. Đã thử trên kit: nạp
+> Rust→Rust, Rust→C, C→Rust chỉ qua cổng COM; ảnh mới tự xác nhận sau 30 s. Chưa thử đường quay lui (ảnh hỏng).
+
 Không có bước này thì mỗi lần cập nhật app Rust phải cắm ST-Link.
 1. Crate `ak-boot` (`no_std`, không phụ thuộc chip): đọc/ghi `boot_ctrl` (hai bản ghi 32 B luân phiên ở EEPROM
    `0x08080000`), `confirm()` cho ảnh đang chạy thử. Chuyển định dạng từ `boot_ctrl.c` của ak-mcu-base.

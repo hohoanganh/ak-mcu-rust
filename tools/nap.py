@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Build mot bai, gan header anh cua ak-mcu-base, nap qua ST-Link.
+"""Build mot bai, gan header anh cua ak-mcu-base, nap qua ST-Link hoac cong COM.
 
-    python tools/nap.py hello-async              build + nap
+    python tools/nap.py hello-async              build + nap qua ST-Link
+    python tools/nap.py hello-async --com COM14  build + nap qua cong COM (khong can ST-Link)
     python tools/nap.py hello-async --chi-build  chi build, in kich thuoc
 
-Anh nap vao 0x08003000 (bootloader giu nguyen), ket noi mode=UR va reset sau khi nap.
+ST-Link: anh nap vao 0x08003000 (bootloader giu nguyen), ket noi mode=UR, reset sau khi nap.
+Cong COM: `ak_fw.py loader` dua kit vao bootloader (app dang chay - bai Rust hay app C -
+phai hieu lenh LOADER), roi `ak_fw.py flash`; anh moi chay thu, tu xac nhan sau 30 s.
 Cong cu ARM: bien moi truong ARM_TOOLCHAIN (thu muc bin), roi toolchain cua PlatformIO,
 roi PATH. STM32_Programmer_CLI: bien STM32_PROGRAMMER_CLI, roi duong cai mac dinh, roi PATH.
 """
@@ -55,6 +58,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("bai", help="ten thu muc cua bai, vi du hello-async")
     ap.add_argument("--chi-build", action="store_true", help="khong nap")
+    ap.add_argument("--com", help="nap qua cong COM nay (vi du COM14) thay vi ST-Link")
     a = ap.parse_args()
 
     chay(["cargo", "build", "--release", "-p", a.bai], cwd=GOC)
@@ -72,6 +76,12 @@ def main():
     chay([arm("size"), elf])
     if a.chi_build:
         print("anh: " + img)
+        return
+
+    if a.com:
+        fw = os.path.join(GOC, "tools", "ak_fw.py")
+        chay([sys.executable, fw, "--port", a.com, "loader"])
+        chay([sys.executable, fw, "--port", a.com, "flash", img])
         return
 
     cli = tim_cong_cu("STM32_Programmer_CLI", "STM32_PROGRAMMER_CLI",

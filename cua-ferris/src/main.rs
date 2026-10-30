@@ -44,7 +44,7 @@ static AM_THANH: Channel<CriticalSectionRawMutex, (u32, u64), 4> = Channel::new(
 
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
 async fn main(spawner: Spawner) {
-    let mut kit = ak_kit::init();
+    let mut kit = ak_kit::init(spawner);
     spawner.spawn(phat_am_thanh(kit.coi).unwrap());
 
     let (mut x, mut y, mut van_toc_y) = (53i32, (MAT_DAT - 14) as f32, 0.0f32);

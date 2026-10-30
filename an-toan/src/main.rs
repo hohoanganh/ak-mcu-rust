@@ -18,8 +18,8 @@ use embedded_graphics::prelude::*;
 use embedded_graphics::text::Text;
 
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
-async fn main(_spawner: Spawner) {
-    let mut kit = ak_kit::init();
+async fn main(spawner: Spawner) {
+    let mut kit = ak_kit::init(spawner);
     let diem = [7, 9, 5, 10, 8]; // 5 phan tu: chi so hop le 0..4
     let mut chi_so: usize = 0;
     let mut vua_doc: Option<i32> = None;

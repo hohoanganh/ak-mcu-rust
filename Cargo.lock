@@ -12,12 +12,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "ak-boot"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
 name = "ak-kit"
 version = "0.1.0"
 dependencies = [
+ "ak-boot",
  "cortex-m",
  "cortex-m-rt",
  "critical-section",
+ "embassy-executor",
  "embassy-stm32",
  "embassy-time",
  "embedded-graphics",

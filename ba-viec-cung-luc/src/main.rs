@@ -20,7 +20,7 @@ use embedded_graphics::text::Text;
 
 #[embassy_executor::main(entry = "cortex_m_rt::entry")]
 async fn main(spawner: Spawner) {
-    let kit = ak_kit::init();
+    let kit = ak_kit::init(spawner);
 
     spawner.spawn(nhay_led(kit.led).unwrap());
     spawner.spawn(tich_tac(kit.coi).unwrap());
