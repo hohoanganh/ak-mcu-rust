@@ -69,7 +69,12 @@ bootloader quay lui.
 
 **Cổng:** có một chương trình Rust làm được việc thật trên kit, kèm bảng so flash/RAM/thời gian với bản C.
 
-### 5. Trộn Rust vào firmware C (2–3 ngày) — con đường thực tế cho sản phẩm
+### 5. Trộn Rust vào firmware C — **xong (30/10/2026)**
+> Crate `ak-ffi` (staticlib) thay bộ tách khung `fw_proto` của app C; ak-mcu-base bật bằng `AK_RUST_PROTO` / `rust_proto`
+> (mặc định tắt, bootloader giữ C). Chi phí trên bản demo: +312 B flash, +272 B RAM. Kit: OTA 58 KB qua bộ tách khung
+> Rust; CI `rust-proto`: 13/13 test máy tính + build STM32. Bẫy: `libak_ffi.a` mang `memcpy` riêng (+2,9 KB) —
+> link `c` trước và trỏ `__aeabi_memcpy*` về newlib. **Cổng quyết định tiếp theo: có đưa Rust vào sản phẩm thật không.**
+
 Không viết lại gì: biên dịch một module Rust thành thư viện tĩnh (`crate-type = ["staticlib"]`), link vào ak-mcu-base,
 gọi qua `extern "C"`.
 - Ứng viên đầu tiên: **bộ phân tích khung** (khung Modbus hoặc `fw_proto`) — nhận byte từ bên ngoài, chỗ hay có lỗi
