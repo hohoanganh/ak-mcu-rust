@@ -2,4 +2,4 @@
 target = "thumbv7m-none-eabi"
 
 [target.thumbv7m-none-eabi]
-rustflags = ["-C", "link-arg=-Tlink.x"]
+rustflags = ["-C", "link-arg=--nmagic", "-C", "link-arg=-Tlink.x"]

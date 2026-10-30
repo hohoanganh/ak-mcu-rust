@@ -34,12 +34,23 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
   phải mang bootloader build 32K (bản mặc định từ `9d23312`). Bootloader chỉ nhận stack
   pointer ban đầu của app ≤ RAM nó được build với — bootloader 16K từ chối app Rust có stack ở `0x20008000`.
 
+- **Chip ngủ bằng WFE thì ST-Link không vào được** (`Unable to get core ID`, `DEV_TARGET_CMD_ERR`, có lúc làm đầu dò treo
+  tới mức phải rút USB). Bộ chạy task `platform-cortex-m` của Embassy ngủ WFE tới khi có việc; cờ `DBG_SLEEP` không cứu
+  được, ngắt SysTick 1 ms đánh thức cũng không đủ. Đầu dò không có NRST nên không kéo chip ra được. **Các bài dùng
+  `platform-spin`** + `#[embassy_executor::main(entry = "cortex_m_rt::entry")]`: không ngủ, ST-Link luôn vào được, nạp
+  chồng lên bài đang chạy bình thường (30/10/2026). `ak-kit` không phụ thuộc `embassy-executor` để hai kiểu không đụng nhau.
+- **Kẹt rồi thì cứu:** giữ **nút giữa (PC13)** khi bấm RESET → `ak_kit::init()` dừng ở chế độ nạp (không chạy Embassy).
+  Chương trình không gọi `ak_kit::init()` thì dùng **BOOT0**: giữ BOOT0, bấm RESET → bootloader ROM, SWD vào được.
+- Embassy 0.6.0 (crates.io) đặt tên enum theo PAC: `PllSource::HSI`, `PllMul::MUL6`, `PllDiv::DIV3`, `Sysclk::PLL1_R`
+  (ví dụ trên nhánh chính của repo embassy viết `Hsi`, `Mul6`…). Macro `main` cần `cortex-m-rt` là phụ thuộc trực tiếp.
+
 ## Build, nạp
 
 - Máy `VTNN Tu Cang`: Rust ở `D:\devcache\cargo` (toolchain `stable-x86_64-pc-windows-gnu`, target
   `thumbv7m-none-eabi`); `arm-none-eabi-objcopy` lấy từ `D:\devcache\platformio\packages\toolchain-gccarmnoneeabi\bin`.
   Repo nằm ở `D:\dev\ak-mcu-rust` — ngoài OneDrive.
-- Nạp: `STM32_Programmer_CLI -c port=SWD mode=UR -d blink.img 0x08003000 -v -rst`. Đầu dò ST-Link tự thiết kế không có
+- Nạp một bài: `python tools/nap.py <bài>` (build → `.bin` → header → ST-Link `mode=UR … -rst`); `--chi-build` để chỉ build.
+- Nạp tay: `STM32_Programmer_CLI -c port=SWD mode=UR -d blink.img 0x08003000 -v -rst`. Đầu dò ST-Link tự thiết kế không có
   NRST/SWO; `mode=HOTPLUG` báo `Unable to get core ID` trên kit đang chạy, `mode=UR` thì được. Gặp
   `Cannot identify the device` khi đổi đầu dò → kiểm firmware đầu dò trước (cần ≥ V2J48M35).
 - Nạp, xoá flash, reset board là thao tác vật lý: nói rõ và chờ đồng ý; board đang có firmware thì dump nguyên chip

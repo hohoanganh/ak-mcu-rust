@@ -62,6 +62,12 @@ Embassy giữ nguyên.
 - Không bật feature `memory-x` của `embassy-stm32` (nó sinh `memory.x` ở `0x08000000`, đè bootloader).
 - Bài 0 (`blink`) giữ `memory.x` riêng 16K như hiện tại.
 
+## Bộ chạy task
+
+**`platform-spin`, không phải `platform-cortex-m`** (đổi sau khi thử trên kit, 30/10/2026): bộ chạy mặc định ngủ bằng WFE
+và lúc chip ngủ thì ST-Link của kit (không có NRST) không vào được để nạp lại. Mỗi bài viết
+`#[embassy_executor::main(entry = "cortex_m_rt::entry")]`. Kit cắm USB nên tốn điện hơn không thành vấn đề.
+
 ## Nạp
 
 Các bài Rust chưa nói được giao thức `fw_proto`, nên không nạp qua cổng COM được. Nạp bằng ST-Link vào `0x08003000`
