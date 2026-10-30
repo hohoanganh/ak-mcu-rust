@@ -195,3 +195,38 @@ impl DrawTarget for ManHinh {
         Ok(())
     }
 }
+
+/// Ve man hinh panic: chuong trinh da dung, lay lai chan man hinh bang `steal()`.
+/// `thong_diep`: ly do; `tep`, `dong`: noi xay ra.
+pub(crate) fn hien_panic(thong_diep: &str, tep: &str, dong: u32) {
+    use core::fmt::Write;
+    use embedded_graphics::mono_font::{ascii::FONT_10X20, ascii::FONT_6X10, MonoTextStyle};
+    use embedded_graphics::primitives::{PrimitiveStyle, Rectangle};
+    use embedded_graphics::text::Text;
+
+    let p = unsafe { embassy_stm32::Peripherals::steal() };
+    let mut mh = ManHinh::new(Flex::new(p.PB13), Flex::new(p.PB12));
+    let chu_nho = MonoTextStyle::new(&FONT_6X10, BinaryColor::On);
+
+    // Dai den chu trang "PANIC" o tren cung
+    Rectangle::new(Point::zero(), Size::new(RONG as u32, 20))
+        .into_styled(PrimitiveStyle::with_fill(BinaryColor::On))
+        .draw(&mut mh)
+        .ok();
+    Text::new("PANIC", Point::new(39, 15), MonoTextStyle::new(&FONT_10X20, BinaryColor::Off)).draw(&mut mh).ok();
+
+    // Noi xay ra: chi ten tep (bo thu muc) + so dong
+    let ten_tep = tep.rsplit(['/', '\\']).next().unwrap_or(tep);
+    let mut noi: heapless::String<32> = heapless::String::new();
+    let _ = write!(noi, "{} dong {}", ten_tep, dong);
+    Text::new(&noi, Point::new(0, 30), chu_nho).draw(&mut mh).ok();
+
+    // Ly do, ngat dong moi 21 ky tu, toi da 3 dong
+    let byte = thong_diep.as_bytes();
+    for (i, khuc) in byte.chunks(21).take(3).enumerate() {
+        if let Ok(s) = core::str::from_utf8(khuc) {
+            Text::new(s, Point::new(0, 42 + 10 * i as i32), chu_nho).draw(&mut mh).ok();
+        }
+    }
+    mh.cap_nhat();
+}

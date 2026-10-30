@@ -223,15 +223,12 @@ macro_rules! in_ra {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     cortex_m::interrupt::disable();
-    match info.location() {
-        Some(noi) => _in_ra(format_args!(
-            "\r\npanic: {} tai {}:{}",
-            info.message(),
-            noi.file(),
-            noi.line()
-        )),
-        None => _in_ra(format_args!("\r\npanic: {}", info.message())),
-    }
+    let mut ly_do: heapless::String<96> = heapless::String::new();
+    let _ = write!(ly_do, "{}", info.message());
+    let (tep, dong) = info.location().map(|n| (n.file(), n.line())).unwrap_or(("?", 0));
+    _in_ra(format_args!("\r\npanic: {} tai {}:{}", ly_do, tep, dong));
+    man_hinh::hien_panic(&ly_do, tep, dong);
+
     // Nhay LED nhanh de nhin la biet chuong trinh da dung. Ghi thang thanh ghi
     // GPIOB vi luc nay khong con muon dung lai doi tuong Led da trao cho task.
     const GPIOB_BSRR: *mut u32 = 0x4002_0418 as *mut u32;
