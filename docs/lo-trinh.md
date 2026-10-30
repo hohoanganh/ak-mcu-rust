@@ -23,8 +23,9 @@
 
 ## Các giai đoạn
 
-### 0. Nháy LED bằng thanh ghi — **xong phần build**
-`blink/`: 1 604 B flash, header ảnh đúng, khớp bootloader. Còn thiếu: chạy trên kit.
+### 0. Nháy LED bằng thanh ghi — **xong (30/10/2026)**
+`blink/`: 1 604 B flash, chạy trên kit sau bootloader 1.4.0. Kit là STM32L151CB-A, **32 KB RAM** (đã kiểm), nên mục
+"xác định RAM thật" của giai đoạn 1 đã xong.
 
 ### 1. Chạy được và nhìn được (½ ngày, cần kit)
 1. Nạp `blink.img`, xác nhận LED và dòng `nhay lan N` trên COM.

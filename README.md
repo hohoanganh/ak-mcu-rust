@@ -1,6 +1,6 @@
 # ak-mcu-rust — thử firmware Rust trên AK MCU KIT
 
-Các thử nghiệm viết firmware bằng Rust cho AK MCU KIT (STM32L151CB: 128 KB flash, 16 KB RAM, 32 MHz), chạy **sau
+Các thử nghiệm viết firmware bằng Rust cho AK MCU KIT (STM32L151CB-A: 128 KB flash, 32 KB RAM, 32 MHz), chạy **sau
 bootloader của [ak-mcu-base](https://github.com/hohoanganh/ak-mcu-base)**: không đè bootloader, nên kit vẫn quay về
 firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C.
 
@@ -8,7 +8,7 @@ firmware C bất cứ lúc nào bằng cách nạp lại `app.img` của bản C
 
 | Thư mục | Nội dung | Trạng thái |
 |---|---|---|
-| [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash | Build được, chưa chạy trên kit |
+| [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash | Chạy trên kit (30/10/2026) |
 
 `tools/mkimage.py` là bản sao từ ak-mcu-base, dùng để gắn header 256 B mà bootloader đòi.
 

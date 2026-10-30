@@ -29,8 +29,8 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 - **Ảnh cài qua OTA chạy "thử"**: app phải tự xác nhận (ghi `boot_ctrl` trong EEPROM, như `boot_ctrl_confirm()` của
   bản C), không thì sau 3 lần khởi động bootloader cài lại ảnh cũ. Nạp qua SWD thì không bị (không có cờ thử).
 - **Device ID đọc qua SWD là `0x429`** (dòng Cat.2 — "STM32L15xxBxxA"), theo dữ liệu chip thì L151CB-A có **32 KB
-  RAM**. ak-mcu-base (từ commit sau `f3fd7ae`) có tùy chọn `ram_size_kb = 32`, mặc định vẫn 16. Chưa kiểm trên kit:
-  đừng nới `memory.x` lên 32 KB trước khi bản 32K của ak-mcu-base chạy được trên kit. Bootloader chỉ nhận stack
+  RAM** — đã kiểm trên kit 30/10/2026 (ghi/đọc `0x20007FF0` qua SWD, không lặp địa chỉ; bản C 32K chạy). ak-mcu-base có
+  tùy chọn `ram_size_kb = 32`, mặc định vẫn 16. Muốn nới `memory.x` lên 32 KB thì kit phải mang bootloader build 32K. Bootloader chỉ nhận stack
   pointer ban đầu của app ≤ RAM nó được build với — bootloader 16K từ chối app Rust có stack ở `0x20008000`.
 
 ## Build, nạp

@@ -7,8 +7,8 @@ bản C về sau). Mục đích là học và đo: Rust chạy cùng bootloader 
 - Xung nhịp HSI 16 MHz, ghi thẳng thanh ghi theo RM0038, không dùng HAL — để dễ đối chiếu với mã C trong `src/port/stm32l151/` của [ak-mcu-base](https://github.com/hohoanganh/ak-mcu-base).
 - Kích thước: 1 604 B flash, 4 B RAM. Ảnh có header: 1 860 B.
 
-> **Trạng thái (29/10/2026):** build được, ảnh qua `mkimage.py info` (status OK). **Chưa chạy trên kit** — lần nạp
-> đầu dừng ở bước kết nối vì đổi sang đầu dò ST-Link chưa cập nhật firmware.
+> **Trạng thái (30/10/2026): chạy trên kit.** Bootloader ak-mcu-base 1.4.0 nhận ảnh (`app: v0.1.0 build 0, 1604 bytes`),
+> nhảy vào app; console in `Xin chao tu Rust!` rồi `nhay lan N` đều mỗi giây.
 
 ## Build và nạp
 
