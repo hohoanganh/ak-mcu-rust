@@ -33,10 +33,12 @@ python tools/nap.py cua-ferris
 
 ## Kích thước
 
+Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+
 | | |
 |---|---|
-| Flash | 30 576 B |
-| RAM tĩnh | 2,6 KB |
+| Flash | 34 028 B |
+| RAM tĩnh | 3,3 KB |
 | Vẽ một khung | ~3 ms (khung 33 ms) |
 
 ## Trạng thái

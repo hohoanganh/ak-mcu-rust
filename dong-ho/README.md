@@ -26,10 +26,12 @@ python tools/nap.py dong-ho
 
 ## Kích thước
 
+Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+
 | | |
 |---|---|
-| Flash | 31 608 B (đồ họa + sin/cos của `micromath`) |
-| RAM tĩnh | 4,5 KB |
+| Flash | 36 884 B (đồ họa + sin/cos của `micromath`) |
+| RAM tĩnh | 5,3 KB |
 
 ## Trạng thái
 

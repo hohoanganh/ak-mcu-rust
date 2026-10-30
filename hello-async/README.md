@@ -31,10 +31,12 @@ da chay 2 giay
 
 ## Kích thước
 
+Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+
 | | |
 |---|---|
-| Flash | 9 884 B (ảnh nạp có header: 10 196 B) |
-| RAM tĩnh | 228 B (`.data` 56 + `.bss` 172) |
+| Flash | 29 088 B (`ak-kit` dựng sẵn mọi phần cứng của kit — xem [rust-va-c.md](../docs/rust-va-c.md), mục 2.1) |
+| RAM tĩnh | 3,1 KB |
 
 ## Đã kiểm trên kit (30/10/2026)
 

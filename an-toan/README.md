@@ -45,10 +45,12 @@ python tools/nap.py an-toan
 
 ## Kích thước
 
+Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+
 | | |
 |---|---|
-| Flash | 28 320 B |
-| RAM tĩnh | 2,4 KB |
+| Flash | 31 716 B |
+| RAM tĩnh | 3,2 KB |
 
 ## Trạng thái
 

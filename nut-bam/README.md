@@ -27,10 +27,12 @@ cho tới khi ngắt nút đánh thức.
 
 ## Kích thước
 
+Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+
 | | |
 |---|---|
-| Flash | 25 152 B |
-| RAM tĩnh | 2,4 KB |
+| Flash | 31 456 B |
+| RAM tĩnh | 3,1 KB |
 
 ## Trạng thái
 
