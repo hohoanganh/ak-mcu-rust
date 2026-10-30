@@ -34,4 +34,4 @@ cho tới khi ngắt nút đánh thức.
 
 ## Trạng thái
 
-Build và nạp được (30/10/2026). **Chưa kiểm phần bấm nút trên kit.**
+Chạy trên kit (30/10/2026): ba nút phát đúng ba nốt (Hoàng Anh bấm và nghe).
