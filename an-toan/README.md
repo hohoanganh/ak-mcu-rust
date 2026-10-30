@@ -52,5 +52,4 @@ python tools/nap.py an-toan
 
 ## Trạng thái
 
-Build và nạp được (30/10/2026). **Chưa kiểm màn hình PANIC trên kit** (cần bấm nút). Phần in panic ra cổng COM đã thử
-trên kit ở bài 1.
+Chạy trên kit (30/10/2026): bấm ⏎ ở `diem[5]`, OLED hiện PANIC chỉ đúng dòng 34 (Hoàng Anh xác nhận).
