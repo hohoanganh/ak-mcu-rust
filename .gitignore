@@ -1,3 +1,4 @@
 target/
 *.bin
 *.img
+!ak-boot/tests/*.bin
