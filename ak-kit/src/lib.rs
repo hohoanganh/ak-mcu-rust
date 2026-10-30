@@ -11,22 +11,35 @@
 //! - Xung nhip 32 MHz (PLL tu HSI 16 MHz x6 / 3), nhu firmware C.
 //! - LED PB8: noi giua +3V3 va chan, sang khi chan o muc thap — `Led` giau chuyen nay di.
 //! - Cong COM: USART1 (PA9 TX, PA10 RX), 115200 8N1, qua cong COM ao cua ST-Link.
+//! - Coi: PB0 = TIM3_CH3 (`Coi::keu(tan_so, ms).await`).
+//! - Man hinh: OLED SSD1309 128x64, ve bang `embedded-graphics` (`ManHinh`).
 //! - Panic: in thong diep kem file:dong ra cong COM roi nhay LED nhanh mai mai.
 
 #![no_std]
+
+mod coi;
+mod man_hinh;
+
+pub use coi::Coi;
+pub use man_hinh::ManHinh;
 
 use core::cell::RefCell;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 
 use critical_section::Mutex;
-use embassy_stm32::gpio::{Level, Output, Speed};
+use embassy_stm32::gpio::{Flex, Level, Output, OutputType, Speed};
 use embassy_stm32::mode::Blocking;
+use embassy_stm32::time::hz;
+use embassy_stm32::timer::low_level::CountingMode;
+use embassy_stm32::timer::simple_pwm::{PwmPin, SimplePwm};
 use embassy_stm32::usart::{self, UartTx};
 
 /// Phan cung cua kit da khoi tao xong.
 pub struct Kit {
     pub led: Led,
+    pub coi: Coi,
+    pub man_hinh: ManHinh,
 }
 
 /// LED tren kit (PB8).
@@ -77,7 +90,41 @@ pub fn init() -> Kit {
     let tx = UartTx::new_blocking(p.USART1, p.PA9, usart::Config::default()).unwrap();
     critical_section::with(|cs| CONG_COM.borrow(cs).replace(Some(tx)));
 
-    Kit { led }
+    let pwm = SimplePwm::new(
+        p.TIM3,
+        None,
+        None,
+        Some(PwmPin::new(p.PB0, OutputType::PushPull)),
+        None,
+        hz(2000),
+        CountingMode::EdgeAlignedUp,
+    );
+    let coi = Coi::new(pwm);
+
+    // Reset man hinh: PA15 cao - thap - cao, roi moi gui lenh
+    let mut res = Output::new(p.PA15, Level::High, Speed::Low);
+    cho_ms(5);
+    res.set_low();
+    cho_ms(5);
+    res.set_high();
+    cho_ms(10);
+    core::mem::forget(res); // giu PA15 o muc cao mai mai
+    let mut man_hinh = ManHinh::new(Flex::new(p.PB13), Flex::new(p.PB12));
+    if !man_hinh.khoi_dong() {
+        _in_ra(format_args!("canh bao: man hinh OLED khong tra loi tren I2C (PB13/PB12, 0x3C)"));
+        for dia_chi in 0x08..0x78u8 {
+            if man_hinh.thu_dia_chi(dia_chi) {
+                _in_ra(format_args!("  thiet bi tra loi o dia chi 0x{:02X}", dia_chi));
+            }
+        }
+    }
+
+    Kit { led, coi, man_hinh }
+}
+
+// Cho ban (chi dung luc khoi tao, truoc khi co task nao chay). 32 MHz.
+fn cho_ms(ms: u32) {
+    cortex_m::asm::delay(ms * 32_000);
 }
 
 // Doc nut giua ngay sau reset, truoc khi Embassy dung toi phan cung.

@@ -41,6 +41,12 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
   chồng lên bài đang chạy bình thường (30/10/2026). `ak-kit` không phụ thuộc `embassy-executor` để hai kiểu không đụng nhau.
 - **Kẹt rồi thì cứu:** giữ **nút giữa (PC13)** khi bấm RESET → `ak_kit::init()` dừng ở chế độ nạp (không chạy Embassy).
   Chương trình không gọi `ak_kit::init()` thì dùng **BOOT0**: giữ BOOT0, bấm RESET → bootloader ROM, SWD vào được.
+- **I2C giả lập của OLED (PB13/PB12) phải nghỉ sau khi đổi SDA, trước khi kéo SCL lên.** Dây SDA của màn chỉ có điện
+  trở kéo lên yếu, lên mức chậm; ở 32 MHz kéo SCL ngay lệnh kế tiếp thì màn đọc sai bit, không trả ACK ở bất kỳ địa chỉ
+  nào. Ở xung nhịp thấp (MSI) lỗi không lộ ra vì CPU tự chậm; RTC trên PB6/PB7 (kéo lên mạnh) cũng không lộ. Nghỉ sau
+  sườn SCL không cứu được — chỗ thiếu là giữa SDA và SCL (30/10/2026, mất ~1 giờ: đã thử tốc độ chân, đảo chân, reset
+  dài, ghi thẳng thanh ghi; mấu chốt là thử `embassy_stm32::init` với cấu hình mặc định thì màn trả lời).
+- **Còi TIM3, đồng hồ Embassy TIM2** (`time-driver-tim2`): `time-driver-any` có thể lấy trúng TIM3.
 - Embassy 0.6.0 (crates.io) đặt tên enum theo PAC: `PllSource::HSI`, `PllMul::MUL6`, `PllDiv::DIV3`, `Sysclk::PLL1_R`
   (ví dụ trên nhánh chính của repo embassy viết `Hsi`, `Mul6`…). Macro `main` cần `cortex-m-rt` là phụ thuộc trực tiếp.
 
