@@ -15,7 +15,7 @@
 |---|---|---|
 | **Embassy** (`embassy-stm32`) | Có ví dụ chính thức cho STM32L1 trong repo embassy: `blinky`, `usart`, `spi`, `flash`, `eeprom`, `usb_serial`, dựng trên **`stm32l151cb-a`**; thư mục ví dụ còn được sửa ngày 19/10/2026 (driver flash hợp nhất) | Con đường chính. Có sẵn driver EEPROM — đúng chỗ bootloader để `boot_ctrl` |
 | Dữ liệu chip của embassy | `STM32L151CB` và `STM32L151CB-A` đều **45 ngắt** → bảng vector 244 B, vừa địa chỉ `0x08003100` | Bẫy bảng vector 1 KB của `blink/` không lặp lại với Embassy (cần kiểm bằng build) |
-| | `STM32L151CB` có 16 KB RAM, **`CB-A` có 32 KB** | Kit đọc ra device ID `0x429` (dòng Cat.2, "…BxxA") → nhiều khả năng là CB-A. Nếu đúng, RAM gấp đôi cho cả C lẫn Rust |
+| | `STM32L151CB` có 16 KB RAM, **`CB-A` có 32 KB** | Kit đọc ra device ID `0x429` (Cat.2), **đã kiểm 32 KB thật** trên kit 30/10/2026; ak-mcu-base mặc định 32K từ `9d23312` |
 | `stm32l1xx-hal` | Có, hỗ trợ L100/L151/L152/L162, ít được bảo trì hơn Embassy | Phương án dự phòng |
 | PAC `stm32l1` | Có (svd2rust); bảng ngắt khai theo dòng lớn, không link được ở `0x08003100` | Không dùng trực tiếp làm `rt` |
 | **defmt + RTT** qua probe-rs | RTT đọc RAM qua SWD, **không cần chân SWO** (ST-Link tự thiết kế không có SWO) | Log nhanh, gọn hơn `printf` qua UART. Chưa kiểm probe-rs với đầu dò này |
@@ -30,7 +30,7 @@
 ### 1. Chạy được và nhìn được (½ ngày, cần kit)
 1. Nạp `blink.img`, xác nhận LED và dòng `nhay lan N` trên COM.
 2. **Xác định RAM thật:** đọc chữ trên chip; thử ghi/đọc `0x20004000` qua SWD. Kết quả ghi vào `CLAUDE.md` của cả hai
-   repo (ak-mcu-base đang khai 16 KB).
+   repo. *(Xong 30/10/2026: 32 KB.)*
 3. Cài `probe-rs`, thử `probe-rs attach --chip STM32L151CBxxA` với đầu dò ST-Link V2-1. Được thì dùng defmt/RTT cho các
    giai đoạn sau; không được (đầu dò, `mode=UR`) thì giữ log UART.
 
@@ -43,7 +43,7 @@
 3. **Đo:** flash, RAM tĩnh, mức stack, so với `blink/` và với ak-mcu-base (kernel + shell).
 
 **Cổng:** bảng vector ≤ 256 B (kiểm bằng `arm-none-eabi-nm`), app Embassy chạy sau bootloader, tốn RAM bao nhiêu.
-RAM quá 50 % trên chip 16 KB thì cân nhắc dừng Embassy ở mức thử nghiệm.
+RAM quá 50 % (trên 16 KB) thì cân nhắc dừng Embassy ở mức thử nghiệm.
 
 ### 3. Làm "công dân" của bootloader (2–3 ngày) — giai đoạn quan trọng nhất
 Không có bước này thì mỗi lần cập nhật app Rust phải cắm ST-Link.
@@ -93,7 +93,7 @@ hoặc dùng RTIC 2 vì nó lập lịch theo ưu tiên ngắt giống kernel AK
 
 - **Embassy đổi API nhanh** (ví dụ L1 dùng edition 2024, executor 0.10): ghim phiên bản trong `Cargo.lock`, chỉ nâng có chủ đích.
 - **Đầu dò ST-Link tự thiết kế** có thể không hợp với probe-rs; vẫn còn STM32_Programmer_CLI + UART.
-- **RAM 16 KB** nếu chip là CB thường: Embassy + defmt có thể chật; RTIC hoặc ghi thẳng thanh ghi là đường lui.
+- ~~RAM 16 KB~~ — kit có 32 KB (đã kiểm). Kit cũ chip Cat.1 vẫn 16 KB: Embassy + defmt có thể chật ở đó.
 - Một người bảo trì hai ngôn ngữ: giữ Rust ở mức thử nghiệm cho tới khi giai đoạn 5 qua cổng.
 
 ## Nguồn
