@@ -9,6 +9,8 @@ dùng chung. Không thay thế ak-mcu-base: kernel AK, bootloader và OTA vẫn 
 
 Mọi bài dưới đây đã chạy trên kit (30/10/2026).
 
+**So sánh Rust và C trên chính kit này** (số đo thật, lỗi thật đã gặp, khi nào chọn gì): [docs/rust-va-c.md](docs/rust-va-c.md).
+
 | Thư mục | Nội dung |
 |---|---|
 | [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash |
