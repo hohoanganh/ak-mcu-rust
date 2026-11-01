@@ -15,7 +15,7 @@
 | Lỗi bộ nhớ, tranh chấp dữ liệu | phát hiện khi chạy (nếu may) | phần lớn bị chặn khi biên dịch |
 | Lỗi phần cứng, thời gian, cấu hình chip | tự lo | **cũng tự lo** — Rust không giúp |
 | Cùng một module (bộ tách khung `fw_proto`) | 58 384 B flash cả firmware | 58 696 B — **+312 B** |
-| Tách yêu cầu Modbus (thay nanoMODBUS) | 22 044 B flash cả firmware | 18 592 B — **−3 452 B** (mục 2.3) |
+| Tách yêu cầu Modbus (thay nanoMODBUS) | 22 292 B flash cả firmware | 18 840 B — **−3 452 B** (mục 2.3) |
 | Test một module với hàng nghìn đầu vào ngẫu nhiên | tự viết vòng lặp, hoặc dựng libFuzzer + ASan | `proptest`: một khai báo, tự thu nhỏ ví dụ hỏng (mục 1.5) |
 | Độ chín của công cụ cho STM32L1 | rất chín (SPL, CubeIDE) | dùng được, nhưng còn vấp (xem mục 5) |
 | Người mới học | dễ bắt đầu, khó viết đúng | khó bắt đầu, khó viết sai |
@@ -86,7 +86,10 @@ Cả hai đều **không cần RTOS** và đều chạy trên một lõi. Khác 
 ai nhận, ở trạng thái nào"; bản Rust viết việc đó **tuần tự như một vòng lặp**, trình biên dịch tự cắt thành máy trạng
 thái. Việc càng nhiều bước (chờ A rồi làm B rồi chờ C), khoảng cách càng rõ.
 
-Kernel AK có thứ Rust/Embassy chưa có sẵn: ưu tiên giữa các task, giám sát task treo, nhật ký sự cố trong EEPROM.
+Kernel AK có thứ Rust/Embassy chưa có sẵn: ưu tiên giữa các task, giám sát từng task treo. `ak-kit` bù được một phần
+giống app C: watchdog 8 s, và panic, HardFault, watchdog đều vào nhật ký sự cố trong EEPROM, **cùng định dạng với app
+C**. Nạp lại app C rồi gõ `crash` là đọc được, ví dụ `fatal  RUST 0x01 (panic main.. line 34)`. Embassy không có
+khái niệm "task nào đang chạy", nên bản ghi không ghi được tên task như kernel AK.
 
 ### 1.3 Trao đổi giữa các việc
 
@@ -189,18 +192,19 @@ So cho công bằng: bản C cũng test mất điện kỹ. `tests/test_fw.c` c�
 | Bài | Nội dung | Flash | RAM tĩnh |
 |---|---|---|---|
 | 0 `blink` | ghi thẳng thanh ghi, không thư viện | 1 604 B | 4 B |
-| 1 `hello-async` | LED + đếm giây, 2 task | 29 192 B | 3 256 B |
-| 2 `ba-viec-cung-luc` | LED + còi + OLED, 3 task | 32 404 B | 5 440 B |
-| 3 `nut-bam` | đàn ba phím, `select3` | 31 532 B | 3 272 B |
-| 4 `dong-ho` | RTC + đồng hồ kim, channel | 37 032 B | 5 400 B |
-| 5 `an-toan` | đọc vượt mảng, PANIC | 31 808 B | 3 296 B |
-| 6 `cua-ferris` | trò chơi 30 khung/giây | 34 160 B | 3 424 B |
+| 1 `hello-async` | LED + đếm giây, 2 task | 31 584 B | 3 320 B |
+| 2 `ba-viec-cung-luc` | LED + còi + OLED, 3 task | 34 820 B | 5 504 B |
+| 3 `nut-bam` | đàn ba phím, `select3` | 33 852 B | 3 336 B |
+| 4 `dong-ho` | RTC + đồng hồ kim, channel | 39 488 B | 5 464 B |
+| 5 `an-toan` | đọc vượt mảng, PANIC | 34 156 B | 3 360 B |
+| 6 `cua-ferris` | trò chơi 30 khung/giây | 36 500 B | 3 488 B |
 
 Đo bằng `python tools/kich_thuoc.py` sau `cargo build --release` (Rust 1.97.0, `opt-level = "s"`). CI chạy lại mỗi lần
 push và báo lỗi nếu bảng vector vượt 256 B hay RAM đè lên vùng của bootloader.
 
-Bài 1 chỉ nháy LED mà tốn 29 KB vì `ak_kit::init()` dựng sẵn **mọi** phần cứng của kit cho mọi bài: OLED, còi, nút,
-RTC, màn hình PANIC (kéo theo font chữ) và phần nghe lệnh nạp qua cổng COM (driver EEPROM). Lúc `ak-kit` mới có LED và
+Bài 1 chỉ nháy LED mà tốn 31 KB vì `ak_kit::init()` dựng sẵn **mọi** phần cứng của kit cho mọi bài: OLED, còi, nút,
+RTC, màn hình PANIC (kéo theo font chữ), phần nghe lệnh nạp qua cổng COM (driver EEPROM), watchdog và nhật ký sự cố
+(khoảng 2,4 KB, thêm ngày 1/11/2026). Lúc `ak-kit` mới có LED và
 cổng COM, bài 1 chỉ 9,9 KB. Đó là cái giá của một thư viện "lắp sẵn mọi thứ" — tiện cho người học, không hợp cho sản
 phẩm, nơi chỉ nên kéo vào thứ thật sự dùng. Còn trên 116 KB của vùng app thì vẫn dư.
 
@@ -235,7 +239,7 @@ thanh ghi, OTA qua RS485 vẫn là C.
 
 | | nanoMODBUS (C) | `ak-modbus` (Rust) |
 |---|---|---|
-| Flash app slave STM32 | 22 044 B | 18 592 B (**−3 452 B**) |
+| Flash app slave STM32 | 22 292 B | 18 840 B (**−3 452 B**) |
 | RAM tĩnh | 2 808 B | 2 956 B (+148 B) |
 | Flash bản demo | 59 596 B | 56 396 B (−3 200 B) |
 | Mã | thư viện 2 463 dòng (master lẫn slave, mọi mã hàm) | 233 dòng kể cả chú thích, 4 mã hàm slave cần |

@@ -49,8 +49,8 @@ python tools/nap.py an-toan
 
 | | |
 |---|---|
-| Flash | 31 808 B |
-| RAM tĩnh | 3,2 KB |
+| Flash | 34 156 B |
+| RAM tĩnh | 3,3 KB |
 
 ## Trạng thái
 

@@ -54,13 +54,19 @@ flowchart TD
     INIT --> KIT["ak_kit::init(spawner)"]
     KIT --> NUT{"Đang giữ nút giữa PC13?"}
     NUT -- "có" --> NAP["Chế độ nạp: LED nháy chậm,<br/>không chạy Embassy → ST-Link luôn vào được"]
-    NUT -- "không" --> HW["Xung nhịp 32 MHz, LED, cổng COM,<br/>còi, OLED, ba nút, RTC"]
-    HW --> TASK["Chạy task nghe_lenh_nap<br/>(nhận lệnh nạp, tự xác nhận sau 30 s)"]
-    TASK --> MAIN["Bài spawn các task của mình"]
+    NUT -- "không" --> HW["Xung nhịp 32 MHz, LED, cổng COM"]
+    HW --> SC{"Lần chạy trước có sự cố?<br/>(.noinit: panic, HardFault; reset do watchdog)"}
+    SC -- "có" --> GHI["Ghi vào nhật ký sự cố trong EEPROM<br/>(định dạng của app C), in ra cổng COM"]
+    SC -- "không" --> TASK
+    GHI --> TASK["Chạy task nghe_lenh_nap<br/>(nhận lệnh nạp, tự xác nhận sau 30 s)"]
+    TASK --> HW2["Còi, OLED, ba nút, RTC"]
+    HW2 --> WDG["Bật watchdog 8 s, chạy task canh_gac<br/>(vuốt watchdog mỗi giây)"]
+    WDG --> MAIN["Bài spawn các task của mình"]
     MAIN --> EXE["Executor Embassy (platform-spin):<br/>hỏi lần lượt task nào sẵn sàng, không ngủ"]
 ```
 
-Mã: [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs) (`init`, `nut_giua_dang_giu`, `che_do_nap`), bài 1
+Mã: [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs) (`init`, `nut_giua_dang_giu`, `che_do_nap`),
+[`ak-kit/src/su_co.rs`](../ak-kit/src/su_co.rs) (nhật ký sự cố, watchdog), bài 1
 [`hello-async/src/main.rs`](../hello-async/src/main.rs).
 
 ## 3. Nhiều việc cùng lúc: kernel AK (C) và Embassy (Rust)
@@ -231,12 +237,14 @@ flowchart LR
         R2 --> R3["panic handler của ak-kit: tắt ngắt"]
         R3 --> R4["Cổng COM: panic ... tai main.rs:34"]
         R3 --> R5["OLED: PANIC / main.rs dong 34"]
-        R3 --> R6["LED nháy nhanh mãi"]
+        R3 --> R6["LED nháy nhanh mãi<br/>(vẫn vuốt watchdog để màn hình PANIC còn đó)"]
+        R3 --> R7[".noinit: RUST, tệp, dòng<br/>→ bấm RESET: vào nhật ký sự cố EEPROM"]
     end
     C ~~~ R
 ```
 
-Mã: bài 5 [`an-toan/src/main.rs`](../an-toan/src/main.rs), `panic` trong [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs).
+Mã: bài 5 [`an-toan/src/main.rs`](../an-toan/src/main.rs), `panic` trong [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs),
+nhật ký sự cố trong [`ak-kit/src/su_co.rs`](../ak-kit/src/su_co.rs) và [`ak-boot/src/su_co.rs`](../ak-boot/src/su_co.rs).
 
 ## 9. Slave Modbus RTU với bộ tách yêu cầu Rust (`ak-modbus`)
 

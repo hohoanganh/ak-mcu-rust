@@ -40,8 +40,8 @@ nhất, 50 = to nhất).
 
 | | |
 |---|---|
-| Flash | 34 160 B |
-| RAM tĩnh | 3,3 KB |
+| Flash | 36 500 B |
+| RAM tĩnh | 3,4 KB |
 | Vẽ một khung | ~3 ms (khung 33 ms) |
 
 ## Trạng thái
