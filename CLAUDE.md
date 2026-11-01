@@ -58,11 +58,11 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 
 ## Build, nạp
 
-- Máy `VTNN Tu Cang`: Rust ở `D:\devcache\cargo` (toolchain `stable-x86_64-pc-windows-gnu`, target
-  `thumbv7m-none-eabi`); `arm-none-eabi-objcopy` lấy từ `D:\devcache\platformio\packages\toolchain-gccarmnoneeabi\bin`.
-  Repo nằm ở `D:\dev\ak-mcu-rust` — ngoài OneDrive.
-- Nạp một bài: `python tools/nap.py <bài> --com COM14` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link
-  `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot --target x86_64-pc-windows-gnu`.
+- Cần Rust stable với target `thumbv7m-none-eabi` (mặc định trong `.cargo/config.toml`) và `arm-none-eabi-objcopy`
+  (`nap.py` tìm theo `ARM_TOOLCHAIN`, rồi toolchain của PlatformIO, rồi `PATH`).
+- Nạp một bài: `python tools/nap.py <bài> --com <cổng>` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link
+  `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot --target <target của máy>`
+  (ví dụ `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-gnu`).
 - Nạp tay: `STM32_Programmer_CLI -c port=SWD mode=UR -d blink.img 0x08003000 -v -rst`. Đầu dò ST-Link tự thiết kế không có
   NRST/SWO; `mode=HOTPLUG` báo `Unable to get core ID` trên kit đang chạy, `mode=UR` thì được. Gặp
   `Cannot identify the device` khi đổi đầu dò → kiểm firmware đầu dò trước (cần ≥ V2J48M35).
