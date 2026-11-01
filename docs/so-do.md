@@ -11,6 +11,7 @@ khối `mermaid`. Mỗi sơ đồ ghi tệp mã tương ứng để đối chi�
 6. [`boot_ctrl`: hai ô ghi xen kẽ, mất điện không mất trạng thái](#6-boot_ctrl-hai-ô-ghi-xen-kẽ-mất-điện-không-mất-trạng-thái)
 7. [Rust nằm trong firmware C (`ak-ffi`)](#7-rust-nằm-trong-firmware-c-ak-ffi)
 8. [Đọc vượt mảng: C chạy tiếp, Rust dừng đúng dòng](#8-đọc-vượt-mảng-c-chạy-tiếp-rust-dừng-đúng-dòng)
+9. [Slave Modbus RTU với bộ tách yêu cầu Rust (`ak-modbus`)](#9-slave-modbus-rtu-với-bộ-tách-yêu-cầu-rust-ak-modbus)
 
 ## 1. Bộ nhớ: bootloader C và app Rust nằm ở đâu
 
@@ -197,7 +198,8 @@ nghìn trạng thái ngẫu nhiên: [rust-va-c.md mục 1.5](rust-va-c.md#15-tes
 ## 7. Rust nằm trong firmware C (`ak-ffi`)
 
 Không viết lại gì. Bộ tách khung Rust ở mục 5 được biên dịch thành `libak_ffi.a` và link vào app C của ak-mcu-base
-(tuỳ chọn `AK_RUST_PROTO`). Phía C gọi nó qua `extern "C"`; bootloader vẫn dùng bản C.
+(tuỳ chọn `AK_RUST_PROTO`). Phía C gọi nó qua `extern "C"`; bootloader vẫn dùng bản C. Thư viện này còn mang bộ tách
+yêu cầu Modbus (mục 9).
 
 ```mermaid
 flowchart LR
@@ -235,3 +237,29 @@ flowchart LR
 ```
 
 Mã: bài 5 [`an-toan/src/main.rs`](../an-toan/src/main.rs), `panic` trong [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs).
+
+## 9. Slave Modbus RTU với bộ tách yêu cầu Rust (`ak-modbus`)
+
+Tuỳ chọn `AK_RUST_MODBUS` của ak-mcu-base: `mb_slave_poll()` đưa cả khung yêu cầu cho Rust thay vì gọi
+`nmbs_server_poll()` của nanoMODBUS. Rust kiểm, C đọc/ghi thanh ghi, Rust dựng câu trả lời.
+
+```mermaid
+flowchart TD
+    BUS["RS485: byte vào ring (ngắt, C)"] --> IDLE{"Đường dây im ≥ 3,5 ký tự<br/>và không đang gửi?"}
+    IDLE -- "chưa" --> BUS
+    IDLE -- "rồi" --> TACH["ak_rs_mb_tach() (Rust)<br/>địa chỉ → mã hàm → độ dài → CRC → số lượng"]
+    TACH -- "chưa đủ byte" --> CHO{"Im quá 20 ms?"}
+    CHO -- "chưa" --> BUS
+    CHO -- "rồi" --> BO["Bỏ khung"]
+    TACH -- "slave khác, sai CRC, thừa byte" --> BO
+    TACH -- "ngoại lệ (01, 02, 03)" --> QB{"Quảng bá?"}
+    TACH -- "yêu cầu 03, 04, 06, 16" --> CB["Callback thanh ghi, OTA (C)<br/>cb_read_holding, cb_write_multi..."]
+    CB --> QB
+    QB -- "có" --> IM["Không trả lời"]
+    QB -- "không" --> TL["ak_rs_mb_tra_loi_*() / ak_rs_mb_ngoai_le() (Rust)<br/>dựng câu trả lời + CRC"]
+    TL --> GUI["hal_rs485_send() (C, gửi bằng ngắt)"]
+```
+
+Mã: [`ak-modbus/src/lib.rs`](../ak-modbus/src/lib.rs), [`ak-ffi/src/lib.rs`](../ak-ffi/src/lib.rs); phía C:
+`src/services/modbus/mb_slave.c` của ak-mcu-base. Số đo và phép so với nanoMODBUS:
+[rust-va-c.md mục 2.3](rust-va-c.md#23-module-thứ-hai-tách-yêu-cầu-modbus-rtu-thay-nanomodbus).

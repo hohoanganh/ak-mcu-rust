@@ -62,16 +62,19 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
   `cargo` ở `.cargo/config.toml`. Nâng Rust hay Embassy có chủ đích: build, `tools/kich_thuoc.py --kiem`, test, rồi cập
   nhật số trong README các bài. Cần thêm `arm-none-eabi-objcopy` (`nap.py` tìm theo `ARM_TOOLCHAIN`, rồi toolchain của
   PlatformIO, rồi `PATH`).
-- **Trước khi commit:** `cargo build --release`, `cargo test -p ak-boot --target <target của máy>`,
+- **Trước khi commit:** `cargo build --release`, `cargo test -p ak-boot -p ak-modbus --target <target của máy>`,
   `cargo clippy --release -- -D warnings`, `python tools/kich_thuoc.py --kiem`. CI (`.github/workflows/ci.yml`) chạy
-  đủ bốn bước. Job `rust-proto` của ak-mcu-base cũng lấy repo này: đổi `ak-boot` hay `ak-ffi` là đổi firmware C.
+  đủ bốn bước. Job `rust` của ak-mcu-base cũng lấy repo này: đổi `ak-boot`, `ak-modbus` hay `ak-ffi` là đổi firmware C.
+- **`ak-modbus` thay nanoMODBUS trong slave của ak-mcu-base (`AK_RUST_MODBUS`).** Đổi cách tách hay mã ngoại lệ thì chạy
+  `test_modbus` bên đó với `-DAK_RUST_MODBUS=ON`: `test_slave_random_requests` so digest câu trả lời với nanoMODBUS.
+  Đổi `ak-ffi/src/lib.rs` thì sửa cả `ak-ffi/include/ak_rs.h` (struct `ak_rs_mb_t` phải khớp `AkRsMb`).
 - Sơ đồ luồng chạy ở `docs/so-do.md` (Mermaid, GitHub tự vẽ). Đổi luồng khởi động, nạp, `boot_ctrl`, bộ tách khung
   hay `ak-ffi` thì sửa sơ đồ tương ứng; kiểm cú pháp bằng `npx @mermaid-js/mermaid-cli` nếu có, vì GitHub chỉ hiện lỗi
   chứ không vẽ.
-- Test tính chất ở `ak-boot/tests/tinh_chat.rs` (`proptest`, chỉ là dev-dependency, không vào firmware). Thấy file
+- Test tính chất ở `ak-boot/tests/tinh_chat.rs` và `ak-modbus/tests/tinh_chat.rs` (`proptest`, chỉ là dev-dependency, không vào firmware). Thấy file
   `*.proptest-regressions` sinh ra khi test hỏng thì giữ lại và commit nếu lỗi là thật (proptest chạy lại ví dụ đó trước).
 - Nạp một bài: `python tools/nap.py <bài> --com <cổng>` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link
-  `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot --target <target của máy>`
+  `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot -p ak-modbus --target <target của máy>`
   (ví dụ `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-gnu`).
 - Nạp tay: `STM32_Programmer_CLI -c port=SWD mode=UR -d blink.img 0x08003000 -v -rst`. Đầu dò ST-Link tự thiết kế không có
   NRST/SWO; `mode=HOTPLUG` báo `Unable to get core ID` trên kit đang chạy, `mode=UR` thì được. Gặp

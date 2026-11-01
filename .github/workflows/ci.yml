@@ -24,14 +24,14 @@ jobs:
             ~/.cargo/git
             target
           key: cargo-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
-      - name: Test ak-boot tren may tinh (boot_ctrl, khung fw_proto, CRC, test tinh chat)
-        run: cargo test -p ak-boot --target x86_64-unknown-linux-gnu
+      - name: Test ak-boot, ak-modbus tren may tinh (boot_ctrl, khung fw_proto, Modbus, test tinh chat)
+        run: cargo test -p ak-boot -p ak-modbus --target x86_64-unknown-linux-gnu
       - name: Build moi bai cho kit
         run: cargo build --release
       - name: Clippy (khong de canh bao)
         run: |
           cargo clippy --release -- -D warnings
-          cargo clippy -p ak-boot --target x86_64-unknown-linux-gnu --tests -- -D warnings
+          cargo clippy -p ak-boot -p ak-modbus --target x86_64-unknown-linux-gnu --tests -- -D warnings
       - name: Kich thuoc va rang buoc (bang vector <= 256 B o 0x08003100, RAM tu 0x20000100)
         run: |
           python3 tools/kich_thuoc.py --kiem | tee kich_thuoc.md

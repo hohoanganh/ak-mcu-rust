@@ -1,0 +1,10 @@
+[package]
+name = "ak-modbus"
+version = "0.1.0"
+edition = "2021"
+description = "Tach khung yeu cau Modbus RTU phia slave (ma ham 03, 04, 06, 16) va dung cau tra loi. Khong phu thuoc chip, test duoc tren may tinh."
+
+[dependencies]
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

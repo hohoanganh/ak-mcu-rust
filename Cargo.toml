@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["blink", "ak-boot", "ak-ffi", "ak-kit", "hello-async", "ba-viec-cung-luc", "nut-bam", "dong-ho", "an-toan", "cua-ferris"]
+members = ["blink", "ak-boot", "ak-modbus", "ak-ffi", "ak-kit", "hello-async", "ba-viec-cung-luc", "nut-bam", "dong-ho", "an-toan", "cua-ferris"]
 
 [profile.dev]
 panic = "abort"
