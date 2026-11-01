@@ -30,7 +30,7 @@ python tools/nap.py dong-ho
 
 | | |
 |---|---|
-| Flash | 37 032 B (đồ họa + sin/cos của `micromath`) |
+| Flash | 39 488 B (đồ họa + sin/cos của `micromath`) |
 | RAM tĩnh | 5,3 KB |
 
 ## Trạng thái

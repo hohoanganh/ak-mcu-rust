@@ -18,7 +18,7 @@ const HEADER_ANH: u32 = 0x0800_3000; // header 256 B cua anh dang chay
 const XAC_NHAN_SAU: Duration = Duration::from_secs(30);
 
 /// EEPROM cua chip lam NVM cho `boot_ctrl` (offset 0 = 0x0808_0000).
-struct Eeprom(Flash<'static, flash::Blocking>);
+pub(crate) struct Eeprom(pub(crate) Flash<'static, flash::Blocking>);
 
 impl Nvm for Eeprom {
     fn doc(&mut self, offset: u32, buf: &mut [u8]) -> Result<(), LoiNvm> {
@@ -62,8 +62,7 @@ fn lay_byte() -> Option<u8> {
 }
 
 #[embassy_executor::task]
-pub(crate) async fn nghe_lenh_nap(bo_nho: Flash<'static, flash::Blocking>) {
-    let mut nvm = Eeprom(bo_nho);
+pub(crate) async fn nghe_lenh_nap(mut nvm: Eeprom) {
     let mut bo_tach = BoTach::new();
     let mut da_xac_nhan = false;
 

@@ -53,6 +53,13 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 - **USART của L151 chỉ giữ 1 byte nhận.** Task hỏi thanh ghi RX sẽ mất byte khi task khác bận (vẽ OLED tới 25 ms).
   `ak-kit/src/nap.rs` nhận bằng ngắt RXNE (handler riêng qua `bind_interrupts!`) vào hàng đợi 256 B; phía gửi vẫn chặn,
   vì `in_ra!` ghi trong critical section và panic chạy khi đã tắt ngắt — `BufferedUart` (gửi bằng ngắt) sẽ treo ở đó.
+- **Watchdog 8 s bật trong `ak_kit::init()`** (task `canh_gac` vuốt mỗi giây, `ak-kit/src/su_co.rs`). Task nào chạy quá 8 s
+  không `.await` (vòng lặp chờ, vẽ quá lâu) là chip reset và nhật ký ghi "watchdog". Chế độ nạp (nút giữa) không bật
+  watchdog; panic vẫn vuốt nó để màn hình PANIC còn đó. HardFault handler nằm trong `ak-kit`: bài không tự khai.
+- **Nhật ký sự cố dùng chung với app C:** `ak-boot/src/su_co.rs` = `services/sys/crash_log.c`, kiểm từng byte với ảnh
+  `ak-boot/tests/crash_log_c.bin` do chính `crash_log.c` sinh. `ak-kit/src/su_co.rs` đọc/ghi `port_noinit_t` của
+  `port/stm32l151/port_stm32.h` theo offset: bên đó đổi bố cục thì sửa theo. Panic: thẻ `RUST`, `pc` = dòng, `lr` = 4 ký
+  tự đầu tên tệp.
 - `ak_kit::init(spawner)` tự chạy task nghe lệnh nạp; INFO trả `staging 0` — bài Rust không nhận ảnh khi đang chạy,
   phải `ak_fw.py loader` trước (`nap.py --com` làm sẵn). Flash dùng kiểu `flash::Blocking`, khác `mode::Blocking`.
 

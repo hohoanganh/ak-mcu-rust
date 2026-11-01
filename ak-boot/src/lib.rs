@@ -3,6 +3,7 @@
 //! - [`boot_ctrl`]: khoi dieu khien boot <-> app trong EEPROM (hai o 32 B ghi xen ke),
 //!   cung dinh dang voi `services/fw/boot_ctrl.c` cua ak-mcu-base.
 //! - [`khung`]: khung giao thuc nap `fw_proto` (A5 | cmd | seq | len | payload | crc16).
+//! - [`su_co`]: nhat ky su co trong NVM, cung dinh dang voi `services/sys/crash_log.c`.
 //! - [`crc16`], [`crc32`]: dung nhu `common/crc.c`.
 //!
 //! Khong phu thuoc chip: test tren may tinh bang
@@ -12,6 +13,7 @@
 
 pub mod boot_ctrl;
 pub mod khung;
+pub mod su_co;
 
 /// CRC-16/CCITT-FALSE: da thuc 0x1021, gia tri dau 0xFFFF (khung fw_proto).
 pub fn crc16(du_lieu: &[u8]) -> u16 {

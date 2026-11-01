@@ -16,6 +16,8 @@
 //! - Dong ho RTC PCF85063 tren I2C1 (PB6/PB7): `dong_ho.doc()` -> gio, phut, giay.
 //! - Nut: ▼ PB3, ▲ PC13, ⏎ PB4 (trai sang phai), `nut.cho_bam().await` bang ngat EXTI.
 //! - Panic: in thong diep kem file:dong ra cong COM roi nhay LED nhanh mai mai.
+//! - Su co (panic, HardFault, watchdog) vao nhat ky su co trong EEPROM, cung dinh dang voi
+//!   app C (`crash`); in ra cong COM o lan khoi dong sau. Watchdog 8 s (`su_co.rs`).
 
 #![no_std]
 
@@ -24,6 +26,7 @@ mod dong_ho;
 mod man_hinh;
 mod nap;
 mod nut;
+mod su_co;
 
 pub use coi::Coi;
 pub use dong_ho::{DongHo, Gio, LoiDongHo};
@@ -122,7 +125,12 @@ pub fn init(spawner: Spawner) -> Kit {
     critical_section::with(|cs| CONG_COM.borrow(cs).replace(Some(tx)));
     // Nghe lenh nap tren cong COM: cap nhat bai bang tools/nap.py --com, khong can ST-Link
     nap::bat_ngat_nhan();
-    spawner.spawn(nap::nghe_lenh_nap(Flash::new_blocking(p.FLASH)).unwrap());
+    // Lan chay truoc ket thuc bat thuong (panic, HardFault, watchdog): ghi vao nhat ky su co
+    let mut eeprom = nap::Eeprom(Flash::new_blocking(p.FLASH));
+    if let Some(r) = su_co::ghi_lai(&mut eeprom) {
+        su_co::in_ban_ghi(&r);
+    }
+    spawner.spawn(nap::nghe_lenh_nap(eeprom).unwrap());
 
     let pwm = SimplePwm::new(
         p.TIM3,
@@ -162,6 +170,9 @@ pub fn init(spawner: Spawner) -> Kit {
     cau_hinh_i2c.scl_pullup = true;
     cau_hinh_i2c.sda_pullup = true;
     let dong_ho = DongHo::new(I2c::new_blocking(p.I2C1, p.PB6, p.PB7, cau_hinh_i2c));
+
+    // Watchdog bat sau cung: khoi tao o tren co cho ban (OLED) nhung xa duoi 8 s
+    spawner.spawn(su_co::canh_gac(su_co::bat_watchdog(p.IWDG)).unwrap());
 
     Kit { led, coi, man_hinh, dong_ho, nut_xuong, nut_len, nut_ok }
 }
@@ -246,16 +257,27 @@ fn panic(info: &PanicInfo) -> ! {
     let mut ly_do: heapless::String<96> = heapless::String::new();
     let _ = write!(ly_do, "{}", info.message());
     let (tep, dong) = info.location().map(|n| (n.file(), n.line())).unwrap_or(("?", 0));
+    su_co::ghi_panic(tep, dong); // truoc moi viec khac: lan khoi dong sau vao nhat ky su co
     _in_ra(format_args!("\r\npanic: {} tai {}:{}", ly_do, tep, dong));
     man_hinh::hien_panic(&ly_do, tep, dong);
 
     // Nhay LED nhanh de nhin la biet chuong trinh da dung. Ghi thang thanh ghi
     // GPIOB vi luc nay khong con muon dung lai doi tuong Led da trao cho task.
     const GPIOB_BSRR: *mut u32 = 0x4002_0418 as *mut u32;
+    // Watchdog van chay: vuot no de man hinh PANIC con do toi khi bam RESET
     loop {
+        su_co::vuot_watchdog_tho();
         unsafe { GPIOB_BSRR.write_volatile(1 << (8 + 16)) }; // bat
         cortex_m::asm::delay(3_200_000); // ~100 ms o 32 MHz
         unsafe { GPIOB_BSRR.write_volatile(1 << 8) }; // tat
         cortex_m::asm::delay(3_200_000);
     }
+}
+
+/// HardFault (doc dia chi khong ton tai, lenh hong...): ghi pc, lr, CFSR nhu
+/// `HardFault_Handler` cua app C roi reset; lan sau vao nhat ky su co.
+#[cortex_m_rt::exception]
+unsafe fn HardFault(ef: &cortex_m_rt::ExceptionFrame) -> ! {
+    su_co::ghi_hardfault(ef.pc(), ef.lr());
+    cortex_m::peripheral::SCB::sys_reset()
 }
