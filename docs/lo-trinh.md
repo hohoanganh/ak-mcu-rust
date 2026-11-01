@@ -28,7 +28,9 @@
 `blink/`: 1 604 B flash, chạy trên kit sau bootloader 1.4.0. Kit là STM32L151CB-A, **32 KB RAM** (đã kiểm), nên mục
 "xác định RAM thật" của giai đoạn 1 đã xong.
 
-### 1. Chạy được và nhìn được (½ ngày, cần kit)
+### 1. Chạy được và nhìn được (½ ngày, cần kit) — **xong, trừ probe-rs**
+> LED và console chạy; RAM 32 KB. Mục 3 (probe-rs + defmt/RTT) chưa thử: vẫn log qua UART.
+
 1. Nạp `blink.img`, xác nhận LED và dòng `nhay lan N` trên COM.
 2. **Xác định RAM thật:** đọc chữ trên chip; thử ghi/đọc `0x20004000` qua SWD. Kết quả ghi vào `CLAUDE.md` của cả hai
    repo. *(Xong 30/10/2026: 32 KB.)*
@@ -37,7 +39,10 @@
 
 **Cổng:** LED chạy, biết RAM 16 hay 32 KB, biết probe-rs dùng được hay không.
 
-### 2. Chuyển sang Embassy (1–2 ngày)
+### 2. Chuyển sang Embassy (1–2 ngày) — **xong (30/10/2026)**
+> Bài 1–6 chạy bằng Embassy sau bootloader, bảng vector 244 B. Bài 1: 29,2 KB flash, 3,2 KB RAM (số của mọi bài:
+> `tools/kich_thuoc.py`, CI kiểm mỗi lần push). RAM dưới 20 % của 32 KB.
+
 1. `blink-embassy/`: `embassy-stm32` (feature đúng chip, **bỏ feature `memory-x`** để giữ `memory.x` riêng ở
    `0x08003100` / `0x20000100`), `embassy-executor`, `embassy-time`.
 2. Console USART1 kiểu async: echo dòng lệnh, lệnh `ver`.
@@ -49,6 +54,7 @@ RAM quá 50 % (trên 16 KB) thì cân nhắc dừng Embassy ở mức thử nghi
 ### 3. Làm "công dân" của bootloader — **xong (30/10/2026)**
 > `ak-boot` (12 test trên máy tính) + task nghe lệnh nạp trong `ak-kit` + `tools/nap.py --com`. Đã thử trên kit: nạp
 > Rust→Rust, Rust→C, C→Rust chỉ qua cổng COM; ảnh mới tự xác nhận sau 30 s. Chưa thử đường quay lui (ảnh hỏng).
+> 1/11/2026: thêm 7 test tính chất (`proptest`) cho `boot_ctrl` và khung `fw_proto`, gồm mất điện ở byte bất kỳ.
 
 Không có bước này thì mỗi lần cập nhật app Rust phải cắm ST-Link.
 1. Crate `ak-boot` (`no_std`, không phụ thuộc chip): đọc/ghi `boot_ctrl` (hai bản ghi 32 B luân phiên ở EEPROM
@@ -61,7 +67,10 @@ Không có bước này thì mỗi lần cập nhật app Rust phải cắm ST-L
 **Cổng:** cập nhật app Rust bằng `ak_fw.py` qua COM, không cần ST-Link; ảnh cài qua OTA tự xác nhận, không bị
 bootloader quay lui.
 
-### 4. Ngoại vi của kit (mỗi món ½–1 ngày, chọn theo nhu cầu)
+### 4. Ngoại vi của kit (mỗi món ½–1 ngày, chọn theo nhu cầu) — **một phần**
+> Đã có: OLED + `embedded-graphics` (bài 2, 4, 6), nút bằng EXTI + channel (bài 3, 6), RTC PCF85063 (bài 4).
+> Chưa: SHT45, RS485 Modbus.
+
 - OLED + `embedded-graphics`: một màn hình đồng hồ, đo thời gian một khung so với bản C (C: Tetris 3,8 ms/khung).
 - SHT45 qua I2C (driver có sẵn trên crates.io).
 - Nút bấm bằng ngắt EXTI + `embassy-sync` channel — tương đương "nút thành message" của kernel AK.

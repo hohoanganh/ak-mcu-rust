@@ -11,6 +11,22 @@ Mọi bài dưới đây đã chạy trên kit (30/10/2026).
 
 **So sánh Rust và C trên chính kit này** (số đo thật, lỗi thật đã gặp, khi nào chọn gì): [docs/rust-va-c.md](docs/rust-va-c.md).
 
+## Đang viết C, Rust cho thêm gì? Xem nhanh
+
+| Ở C | Ở Rust | Xem ở đâu |
+|---|---|---|
+| Đọc vượt mảng: ra rác, chạy tiếp | dừng đúng dòng, OLED hiện `PANIC main.rs dong 34` | bài 5 [`an-toan/`](an-toan/) |
+| Task gửi message dạng byte, bên nhận tự ép kiểu | channel có kiểu: gửi nhầm kiểu là không build được | bài 4 [`dong-ho/`](dong-ho/) |
+| Mã trả về dễ quên kiểm | `Result` buộc xử lý nhánh lỗi (RTC mất giờ thật trên kit) | bài 4, [`ak-kit/src/dong_ho.rs`](ak-kit/src/dong_ho.rs) |
+| Việc nhiều bước chia thành task + signal + timer | `async`: viết tuần tự, `.await` là chỗ nhường lượt | bài 1–3 |
+| Test hàng nghìn đầu vào ngẫu nhiên: tự dựng | `proptest`: 7 tính chất (byte rác, mất điện ở byte bất kỳ), tự thu nhỏ ví dụ hỏng | [`ak-boot/tests/tinh_chat.rs`](ak-boot/tests/tinh_chat.rs) |
+| Không phải viết lại: | module Rust link vào firmware C, +312 B flash, đang chạy OTA trên kit | [`ak-ffi/`](ak-ffi/) |
+
+Cái Rust **không** cứu được (bảng vector, I2C giả lập, ST-Link mất kết nối) cũng ghi đủ ở
+[docs/rust-va-c.md](docs/rust-va-c.md#4-rust-không-cứu-được-gì--các-lỗi-thật-đã-gặp).
+
+## Các bài
+
 | Thư mục | Nội dung |
 |---|---|
 | [`blink/`](blink/) | Nháy LED PB8, in số lần nháy ra console USART1. Ghi thẳng thanh ghi, 1,6 KB flash |
@@ -42,18 +58,22 @@ Lần đầu chuyển từ bài Rust cũ (trước khi có phần nghe lệnh n�
 
 `tools/mkimage.py` và `tools/ak_fw.py` là bản sao từ ak-mcu-base (gắn header ảnh, giao thức nạp `fw_proto`).
 `ak-boot/` là phần logic để bài Rust sống chung bootloader (`boot_ctrl` trong EEPROM, khung `fw_proto`, CRC), không
-phụ thuộc chip: `cargo test -p ak-boot --target <target của máy>` (12 test, có đọc EEPROM thật dump từ kit).
+phụ thuộc chip: `cargo test -p ak-boot --target <target của máy>` (14 test ví dụ, có đọc EEPROM thật dump từ kit,
+và 7 test tính chất).
 
 Bước tiếp theo (trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
 
 ## Cần cài
 
-- Rust (`rustup`) và target Cortex-M3: `rustup target add thumbv7m-none-eabi`
+- Rust (`rustup`). Phiên bản Rust và target Cortex-M3 ghim trong [`rust-toolchain.toml`](rust-toolchain.toml); lần
+  đầu chạy `cargo` trong repo, `rustup` tự tải đúng bản
 - `arm-none-eabi-objcopy` (có sẵn trong toolchain ARM của PlatformIO hoặc STM32CubeIDE)
 - Python 3 (+ `pyserial`) cho `tools/mkimage.py`, `tools/ak_fw.py`
 - STM32CubeProgrammer và đầu dò ST-Link để nạp lần đầu
 
 Build cả workspace: `cargo build --release` ở thư mục gốc; output nằm ở `target/thumbv7m-none-eabi/release/`.
+`python tools/kich_thuoc.py --kiem` in flash/RAM từng bài và kiểm các ràng buộc ở mục dưới. CI
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) chạy build, test, `clippy` và bước kiểm này mỗi lần push.
 Cách gắn header và nạp: xem README của từng thư mục.
 
 ## Ràng buộc chung khi chạy sau bootloader
