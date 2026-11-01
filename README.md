@@ -28,7 +28,7 @@ Thiết kế chuỗi bài: [`docs/superpowers/specs/`](docs/superpowers/specs/).
 ## Nạp
 
 ```bash
-python tools/nap.py <tên-bài> --com COM14   # qua cổng COM ảo của ST-Link — không cần nối SWD
+python tools/nap.py <tên-bài> --com <cổng>  # qua cổng COM ảo của ST-Link — không cần nối SWD
 python tools/nap.py <tên-bài>               # qua ST-Link (SWD)
 ```
 
@@ -42,7 +42,7 @@ Lần đầu chuyển từ bài Rust cũ (trước khi có phần nghe lệnh n�
 
 `tools/mkimage.py` và `tools/ak_fw.py` là bản sao từ ak-mcu-base (gắn header ảnh, giao thức nạp `fw_proto`).
 `ak-boot/` là phần logic để bài Rust sống chung bootloader (`boot_ctrl` trong EEPROM, khung `fw_proto`, CRC), không
-phụ thuộc chip: `cargo test -p ak-boot --target x86_64-pc-windows-gnu` (12 test, có đọc EEPROM thật dump từ kit).
+phụ thuộc chip: `cargo test -p ak-boot --target <target của máy>` (12 test, có đọc EEPROM thật dump từ kit).
 
 Bước tiếp theo (trộn Rust vào firmware C): [`docs/lo-trinh.md`](docs/lo-trinh.md).
 

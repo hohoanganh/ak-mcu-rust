@@ -2,7 +2,7 @@
 """Build mot bai, gan header anh cua ak-mcu-base, nap qua ST-Link hoac cong COM.
 
     python tools/nap.py hello-async              build + nap qua ST-Link
-    python tools/nap.py hello-async --com COM14  build + nap qua cong COM (khong can ST-Link)
+    python tools/nap.py hello-async --com COM3   build + nap qua cong COM (khong can ST-Link)
     python tools/nap.py hello-async --chi-build  chi build, in kich thuoc
 
 ST-Link: anh nap vao 0x08003000 (bootloader giu nguyen), ket noi mode=UR, reset sau khi nap.
@@ -42,8 +42,7 @@ def tim_cong_cu(ten, bien_moi_truong, thu_muc_thu):
 
 def arm(ten):
     return tim_cong_cu("arm-none-eabi-" + ten, "ARM_TOOLCHAIN",
-                       [r"D:\devcache\platformio\packages\toolchain-gccarmnoneeabi\bin",
-                        os.path.expanduser(r"~\.platformio\packages\toolchain-gccarmnoneeabi\bin")])
+                       [os.path.join(os.path.expanduser("~"), ".platformio", "packages", "toolchain-gccarmnoneeabi", "bin")])
 
 
 def chay(lenh, **kw):
@@ -58,7 +57,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("bai", help="ten thu muc cua bai, vi du hello-async")
     ap.add_argument("--chi-build", action="store_true", help="khong nap")
-    ap.add_argument("--com", help="nap qua cong COM nay (vi du COM14) thay vi ST-Link")
+    ap.add_argument("--com", help="nap qua cong COM nay (vi du COM3, /dev/ttyACM0) thay vi ST-Link")
     a = ap.parse_args()
 
     chay(["cargo", "build", "--release", "-p", a.bai], cwd=GOC)

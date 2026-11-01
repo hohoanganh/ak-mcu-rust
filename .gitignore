@@ -2,3 +2,4 @@ target/
 *.bin
 *.img
 !ak-boot/tests/*.bin
+__pycache__/
