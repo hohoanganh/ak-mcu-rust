@@ -1,0 +1,38 @@
+# Build moi bai cho kit, test phan logic tren may tinh, kiem rang buoc chay sau bootloader.
+# Phien ban Rust lay tu rust-toolchain.toml (rustup tu tai).
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust (theo rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+      - name: Test ak-boot tren may tinh (boot_ctrl, khung fw_proto, CRC, test tinh chat)
+        run: cargo test -p ak-boot --target x86_64-unknown-linux-gnu
+      - name: Build moi bai cho kit
+        run: cargo build --release
+      - name: Clippy (khong de canh bao)
+        run: |
+          cargo clippy --release -- -D warnings
+          cargo clippy -p ak-boot --target x86_64-unknown-linux-gnu --tests -- -D warnings
+      - name: Kich thuoc va rang buoc (bang vector <= 256 B o 0x08003100, RAM tu 0x20000100)
+        run: |
+          python3 tools/kich_thuoc.py --kiem | tee kich_thuoc.md
+          cat kich_thuoc.md >> "$GITHUB_STEP_SUMMARY"

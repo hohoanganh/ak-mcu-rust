@@ -1,0 +1,7 @@
+# Ghim phien ban Rust: Embassy doi API nhanh, ghim de build hom nay va build nam sau ra cung mot ket qua.
+# rustup tu tai dung phien ban nay va target Cortex-M3 khi chay cargo trong repo.
+# Nang phien ban co chu dich: doi so duoi day, `cargo build --release`, `python tools/kich_thuoc.py --kiem`, test.
+[toolchain]
+channel = "1.97.0"
+targets = ["thumbv7m-none-eabi"]
+components = ["clippy"]

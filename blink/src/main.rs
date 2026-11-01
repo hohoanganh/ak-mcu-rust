@@ -29,6 +29,7 @@ const SYSCLK_HZ: u32 = 16_000_000;
 
 const FLASH_ACR: u32 = 0x4002_3C00;
 const RCC: u32 = 0x4002_3800;
+#[allow(clippy::identity_op)] // giu dang "co so + offset" cho de doi chieu reference manual
 const RCC_CR: u32 = RCC + 0x00;
 const RCC_CFGR: u32 = RCC + 0x08;
 const RCC_AHBENR: u32 = RCC + 0x1C;
@@ -41,6 +42,7 @@ const BSRR: u32 = 0x18;
 const AFRH: u32 = 0x24;
 
 const USART1: u32 = 0x4001_3800;
+#[allow(clippy::identity_op)]
 const USART_SR: u32 = USART1 + 0x00;
 const USART_DR: u32 = USART1 + 0x04;
 const USART_BRR: u32 = USART1 + 0x08;
