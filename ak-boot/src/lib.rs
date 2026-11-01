@@ -6,7 +6,7 @@
 //! - [`crc16`], [`crc32`]: dung nhu `common/crc.c`.
 //!
 //! Khong phu thuoc chip: test tren may tinh bang
-//! `cargo test -p ak-boot --target x86_64-pc-windows-gnu`.
+//! `cargo test -p ak-boot --target <target cua may>` (vi du `x86_64-unknown-linux-gnu`).
 
 #![cfg_attr(not(test), no_std)]
 
