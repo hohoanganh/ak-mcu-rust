@@ -286,6 +286,7 @@ của người viết firmware, bất kể ngôn ngữ.
 
 ## Đọc tiếp
 
+- Sơ đồ luồng chạy (khởi động, async, nạp và quay lui, Rust trong C): [so-do.md](so-do.md).
 - Chuỗi 7 bài cho người mới: [README](../README.md) — mỗi bài một ý, có hướng dẫn quay clip.
 - Lộ trình và các cổng quyết định: [lo-trinh.md](lo-trinh.md).
 - Bẫy kỹ thuật chi tiết: [CLAUDE.md](../CLAUDE.md).

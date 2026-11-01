@@ -65,6 +65,9 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 - **Trước khi commit:** `cargo build --release`, `cargo test -p ak-boot --target <target của máy>`,
   `cargo clippy --release -- -D warnings`, `python tools/kich_thuoc.py --kiem`. CI (`.github/workflows/ci.yml`) chạy
   đủ bốn bước. Job `rust-proto` của ak-mcu-base cũng lấy repo này: đổi `ak-boot` hay `ak-ffi` là đổi firmware C.
+- Sơ đồ luồng chạy ở `docs/so-do.md` (Mermaid, GitHub tự vẽ). Đổi luồng khởi động, nạp, `boot_ctrl`, bộ tách khung
+  hay `ak-ffi` thì sửa sơ đồ tương ứng; kiểm cú pháp bằng `npx @mermaid-js/mermaid-cli` nếu có, vì GitHub chỉ hiện lỗi
+  chứ không vẽ.
 - Test tính chất ở `ak-boot/tests/tinh_chat.rs` (`proptest`, chỉ là dev-dependency, không vào firmware). Thấy file
   `*.proptest-regressions` sinh ra khi test hỏng thì giữ lại và commit nếu lỗi là thật (proptest chạy lại ví dụ đó trước).
 - Nạp một bài: `python tools/nap.py <bài> --com <cổng>` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link

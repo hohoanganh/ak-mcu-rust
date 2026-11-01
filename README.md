@@ -11,6 +11,9 @@ Mọi bài dưới đây đã chạy trên kit (30/10/2026).
 
 **So sánh Rust và C trên chính kit này** (số đo thật, lỗi thật đã gặp, khi nào chọn gì): [docs/rust-va-c.md](docs/rust-va-c.md).
 
+**Sơ đồ luồng chạy** (bộ nhớ, khởi động, async so với kernel AK, nạp qua COM và quay lui, bộ tách khung, Rust trong
+firmware C): [docs/so-do.md](docs/so-do.md).
+
 ## Đang viết C, Rust cho thêm gì? Xem nhanh
 
 | Ở C | Ở Rust | Xem ở đâu |
