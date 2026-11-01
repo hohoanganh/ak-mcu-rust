@@ -14,7 +14,9 @@ Mọi bài đã chạy trên kit thật.
 | Việc nhiều bước chia thành task + signal + timer | `async`: viết tuần tự từ trên xuống | bài 1–3 |
 | Test hàng nghìn đầu vào ngẫu nhiên phải tự dựng | `proptest` có sẵn, tự thu nhỏ ví dụ hỏng | [`ak-boot`](ak-boot/tests/tinh_chat.rs) |
 
-Không cần viết lại firmware C: một module Rust đã chạy bên trong nó, chỉ tốn thêm 312 B ([`ak-ffi`](ak-ffi/)).
+Không cần viết lại firmware C: hai module Rust chạy bên trong nó qua [`ak-ffi`](ak-ffi/). Bộ tách khung nạp firmware
+chỉ tốn thêm 312 B. Bộ tách yêu cầu Modbus ([`ak-modbus`](ak-modbus/)) thay thư viện C nanoMODBUS, firmware nhỏ đi 3,4 KB,
+và trả lời giống thư viện đó từng byte trên 20 000 yêu cầu ngẫu nhiên.
 
 ## Các bài
 

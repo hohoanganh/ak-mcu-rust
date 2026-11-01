@@ -15,12 +15,14 @@
 | Lỗi bộ nhớ, tranh chấp dữ liệu | phát hiện khi chạy (nếu may) | phần lớn bị chặn khi biên dịch |
 | Lỗi phần cứng, thời gian, cấu hình chip | tự lo | **cũng tự lo** — Rust không giúp |
 | Cùng một module (bộ tách khung `fw_proto`) | 58 384 B flash cả firmware | 58 696 B — **+312 B** |
+| Tách yêu cầu Modbus (thay nanoMODBUS) | 22 044 B flash cả firmware | 18 592 B — **−3 452 B** (mục 2.3) |
 | Test một module với hàng nghìn đầu vào ngẫu nhiên | tự viết vòng lặp, hoặc dựng libFuzzer + ASan | `proptest`: một khai báo, tự thu nhỏ ví dụ hỏng (mục 1.5) |
 | Độ chín của công cụ cho STM32L1 | rất chín (SPL, CubeIDE) | dùng được, nhưng còn vấp (xem mục 5) |
 | Người mới học | dễ bắt đầu, khó viết đúng | khó bắt đầu, khó viết sai |
 
 **Kết luận ngắn:** giữ nền C đang chạy tốt; viết **module mới ở chỗ nhận dữ liệu từ bên ngoài** bằng Rust và trộn vào
-firmware C — chi phí vài trăm byte, đã chạy trên kit và qua CI.
+firmware C. Chi phí chỉ vài trăm byte, có khi còn nhỏ hơn bản C: bộ tách Modbus Rust thay phần server của một thư viện
+C tổng quát.
 
 ---
 
@@ -225,7 +227,33 @@ Lần link đầu, bản Rust tốn thêm **2,9 KB** — không phải do mã Ru
 theo `memcpy`/`memmove` riêng, đè lên bản của newlib. Đặt `libc` trước `libak_ffi.a` khi link và trỏ `__aeabi_memcpy*`
 về newlib thì còn +312 B.
 
-### 2.3 Nạp lại firmware qua cổng COM (không cần ST-Link)
+### 2.3 Module thứ hai: tách yêu cầu Modbus RTU (thay nanoMODBUS)
+
+Slave Modbus của ak-mcu-base nhận yêu cầu qua RS485, cũng là chỗ nhận byte từ bên ngoài. Trước đây việc tách khung do
+thư viện C nanoMODBUS làm; crate [`ak-modbus`](../ak-modbus/) thay đúng phần đó (tuỳ chọn `AK_RUST_MODBUS`). Phần đọc/ghi
+thanh ghi, OTA qua RS485 vẫn là C.
+
+| | nanoMODBUS (C) | `ak-modbus` (Rust) |
+|---|---|---|
+| Flash app slave STM32 | 22 044 B | 18 592 B (**−3 452 B**) |
+| RAM tĩnh | 2 808 B | 2 956 B (+148 B) |
+| Flash bản demo | 59 596 B | 56 396 B (−3 200 B) |
+| Mã | thư viện 2 463 dòng (master lẫn slave, mọi mã hàm) | 233 dòng kể cả chú thích, 4 mã hàm slave cần |
+| Test riêng | của thư viện (không chạy trong repo này) | 8 test ví dụ + 5 test tính chất (`cargo test`) |
+| `test_modbus` của ak-mcu-base | 20 277 kiểm tra, qua hết | cùng bộ test (+1 kiểm tra riêng của bản Rust), qua hết |
+
+Bản Rust nhỏ hơn không phải nhờ ngôn ngữ, mà vì **chỉ làm đúng việc cần**. nanoMODBUS là thư viện tổng quát: phía
+slave nó kéo theo xử lý coil, discrete input và việc đọc khung theo từng mã hàm. Bài học này đúng cho cả C lẫn Rust.
+
+**Hai bản trả lời có giống nhau không?** `test_modbus` gửi 20 000 yêu cầu ngẫu nhiên vào cả hai bản và so CRC-32 của
+mọi câu trả lời. Lần chạy đầu, 931 khung khác nhau, tất cả cùng một loại: mã hàm 16 khai **số byte lẻ** (CRC vẫn đúng).
+Bản Rust trả ngoại lệ 03 như đặc tả. nanoMODBUS thì im lặng: vòng đọc thanh ghi bỏ sót byte lẻ cuối, nên nó tính CRC
+lệch một byte và tưởng khung hỏng. Loại khung này mình giữ hành vi của Rust, có test riêng. Phần còn lại giống nhau từng
+byte (15 248 câu trả lời). Cài thử một lỗi vào Rust (bỏ kiểm vượt `0xFFFF`) thì digest đổi ngay.
+
+Danh sách bốn chỗ cố ý khác nanoMODBUS, đều theo đặc tả Modbus: `docs/modbus.md` của ak-mcu-base.
+
+### 2.4 Nạp lại firmware qua cổng COM (không cần ST-Link)
 
 | Chuyển | Thời gian |
 |---|---|
@@ -245,6 +273,9 @@ Cùng bootloader, cùng giao thức, cùng công cụ `ak_fw.py` — app C và b
 - **Đọc vượt mảng lúc chạy** (bài 5): dừng đúng dòng thay vì đọc rác.
 - **Kiểu dữ liệu giữa các task** (bài 4): channel chỉ nhận đúng kiểu `Gio`.
 - **Lỗi bắt buộc phải xử lý** (`Result` khi đọc RTC, EEPROM, I2C): không có chỗ nào "quên kiểm mã trả về".
+- **Một chỗ lệch đặc tả của thư viện C nanoMODBUS** (mục 2.3): đặt bộ tách Rust cạnh nanoMODBUS rồi so 20 000 câu
+  trả lời thì lộ ra khung "số byte lẻ" bị nanoMODBUS bỏ qua thay vì trả ngoại lệ 03. Lần này Rust không bắt lỗi nhờ
+  trình biên dịch, mà nhờ có một bản thứ hai viết lại từ đặc tả để so.
 - **Một giả định sai trong test mất điện** (`ak-boot/tests/tinh_chat.rs`, mục 1.5): `proptest` tìm ra trường hợp byte
   cũ trùng byte mới mà người viết test không nghĩ tới. Lỗi nằm ở test, không ở firmware, nhưng cũng là loại chuyện chỉ
   máy sinh đầu vào mới tìm được.
@@ -279,7 +310,7 @@ của người viết firmware, bất kể ngôn ngữ.
 | Tình huống | Chọn |
 |---|---|
 | Firmware đang chạy ổn, đã có test, có OTA an toàn | **giữ C** — viết lại không đem thêm gì |
-| Module mới **nhận dữ liệu từ bên ngoài** (giao thức, gói tin, tệp cấu hình) | **Rust, trộn vào C** — rẻ (+312 B), test được trên máy tính |
+| Module mới **nhận dữ liệu từ bên ngoài** (giao thức, gói tin, tệp cấu hình) | **Rust, trộn vào C** — rẻ (+312 B cho `fw_proto`, −3,4 KB cho Modbus), test được trên máy tính |
 | Dự án mới, chip mới (nRF52, STM32 dòng mới), người viết sẵn sàng học | **Rust + Embassy** từ đầu |
 | Dạy người mới về nhúng | Rust cho bài học về an toàn và `async`; C để hiểu chip chạy thế nào (bài 0 — ghi thẳng thanh ghi — là cầu nối) |
 | Sản phẩm chạy pin, cần ngủ sâu | được cả hai; với Rust dùng bộ chạy `platform-cortex-m` và tính trước cách nạp lại (mục 4) |

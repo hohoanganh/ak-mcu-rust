@@ -69,7 +69,7 @@ bootloader quay lui.
 
 ### 4. Ngoại vi của kit (mỗi món ½–1 ngày, chọn theo nhu cầu) — **một phần**
 > Đã có: OLED + `embedded-graphics` (bài 2, 4, 6), nút bằng EXTI + channel (bài 3, 6), RTC PCF85063 (bài 4).
-> Chưa: SHT45, RS485 Modbus.
+> Chưa: SHT45. RS485 Modbus: làm theo hướng giai đoạn 5 (Rust trong firmware C), xem dưới.
 
 - OLED + `embedded-graphics`: một màn hình đồng hồ, đo thời gian một khung so với bản C (C: Tetris 3,8 ms/khung).
 - SHT45 qua I2C (driver có sẵn trên crates.io).
@@ -82,7 +82,9 @@ bootloader quay lui.
 > Crate `ak-ffi` (staticlib) thay bộ tách khung `fw_proto` của app C; ak-mcu-base bật bằng `AK_RUST_PROTO` / `rust_proto`
 > (mặc định tắt, bootloader giữ C). Chi phí trên bản demo: +312 B flash, +272 B RAM. Kit: OTA 58 KB qua bộ tách khung
 > Rust; CI `rust-proto`: 13/13 test máy tính + build STM32. Bẫy: `libak_ffi.a` mang `memcpy` riêng (+2,9 KB) —
-> link `c` trước và trỏ `__aeabi_memcpy*` về newlib. **Cổng quyết định tiếp theo: có đưa Rust vào sản phẩm thật không.**
+> link `c` trước và trỏ `__aeabi_memcpy*` về newlib.
+> 1/11/2026: module thứ hai, crate `ak-modbus` tách yêu cầu Modbus RTU cho slave thay nanoMODBUS (`AK_RUST_MODBUS`):
+> app slave −3 452 B flash, +148 B RAM; `test_modbus` so 20 000 câu trả lời với nanoMODBUS. Chưa chạy trên kit. **Cổng quyết định tiếp theo: có đưa Rust vào sản phẩm thật không.**
 
 Không viết lại gì: biên dịch một module Rust thành thư viện tĩnh (`crate-type = ["staticlib"]`), link vào ak-mcu-base,
 gọi qua `extern "C"`.

@@ -24,6 +24,7 @@ name = "ak-ffi"
 version = "0.1.0"
 dependencies = [
  "ak-boot",
+ "ak-modbus",
 ]
 
 [[package]]
@@ -39,6 +40,13 @@ dependencies = [
  "embassy-time",
  "embedded-graphics",
  "heapless",
+]
+
+[[package]]
+name = "ak-modbus"
+version = "0.1.0"
+dependencies = [
+ "proptest",
 ]
 
 [[package]]
