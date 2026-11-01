@@ -22,6 +22,9 @@ python tools/nap.py cua-ferris
 
 ## Quay clip (30–60 s)
 
+Còi mặc định tắt. Muốn có tiếng thì thêm `kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init(spawner)` (1 = nhỏ
+nhất, 50 = to nhất).
+
 1. Mở đầu bằng mã nguồn, dòng 23–38: mảng `FERRIS` — nhìn chuỗi ký tự đã thấy con cua.
 2. Cận cảnh OLED, bật tiếng: chơi vài lượt, nhảy hứng sao, để rơi một ngôi sao cho nghe tiếng trầm.
 3. Khoanh:

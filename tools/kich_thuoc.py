@@ -5,7 +5,7 @@
     python tools/kich_thuoc.py            in bang kich thuoc (Markdown)
     python tools/kich_thuoc.py --kiem     in bang, tra ma loi 1 neu co bai vi pham rang buoc
 
-Rang buoc (xem README, muc "Rang buoc chung"):
+Rang buoc (xem docs/so-do.md muc 1 va blink/README.md):
 - bang vector o dung 0x08003100 va <= 256 B (256 B dau vung app la header anh);
 - RAM cua app bat dau tu 0x20000100 (dau RAM la .noinit cua bootloader);
 - toan bo flash nam trong vung APP (toi 0x08020000).

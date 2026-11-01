@@ -16,6 +16,9 @@ python tools/nap.py ba-viec-cung-luc
 
 ## Quay clip (30–45 s)
 
+Còi mặc định tắt. Muốn có tiếng thì thêm `kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init(spawner)` (1 = nhỏ
+nhất, 50 = to nhất).
+
 1. Cận cảnh kit, bật tiếng: LED nháy, còi tích tắc mỗi giây, số trên OLED chạy 0.1 s một lần — ba nhịp lệch nhau
    rõ ràng.
 2. Chuyển sang mã nguồn, khoanh:

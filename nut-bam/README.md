@@ -14,6 +14,9 @@ python tools/nap.py nut-bam
 
 ## Quay clip (30–45 s)
 
+Còi mặc định tắt. Muốn có tiếng thì thêm `kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init(spawner)` (1 = nhỏ
+nhất, 50 = to nhất).
+
 1. Cận cảnh kit, bật tiếng: bấm một giai điệu ngắn (ví dụ Đô–Mi–Sol–Mi–Đô); màn hình đổi theo từng nốt.
 2. Mã nguồn, khoanh:
    - dòng 28–33: `select3(...).await` — một dòng chờ ba nút;
