@@ -37,7 +37,7 @@ python tools/nap.py cua-ferris
 
 | | |
 |---|---|
-| Flash | 34 028 B |
+| Flash | 34 160 B |
 | RAM tĩnh | 3,3 KB |
 | Vẽ một khung | ~3 ms (khung 33 ms) |
 

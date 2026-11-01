@@ -31,8 +31,8 @@ cho tới khi ngắt nút đánh thức.
 
 | | |
 |---|---|
-| Flash | 31 456 B |
-| RAM tĩnh | 3,1 KB |
+| Flash | 31 532 B |
+| RAM tĩnh | 3,2 KB |
 
 ## Trạng thái
 

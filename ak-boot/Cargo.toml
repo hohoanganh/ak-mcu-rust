@@ -6,3 +6,6 @@ description = "Phan logic de app Rust song chung bootloader ak-mcu-base: boot_ct
 
 [dependencies]
 heapless = "0.9.3"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

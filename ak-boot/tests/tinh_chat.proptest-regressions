@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 1c4f3ad4d270ffbde26cda21686a190bef35c58cc92e97457d9e0b7d2153dcc4 # shrinks to e = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], cu = BootCtrl { cmd: 0, install_attempts: 0, last_result: 0, seq: 0, install_count: 0, trial: 0, trial_boots: 0, rolled_back: 0, reserved: 0 }, moi = BootCtrl { cmd: 254, install_attempts: 119, last_result: 102, seq: 0, install_count: 4293903370, trial: 57, trial_boots: 4, rolled_back: 183, reserved: 72 }, cat = 19

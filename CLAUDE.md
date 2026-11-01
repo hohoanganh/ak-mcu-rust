@@ -58,8 +58,15 @@ Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.r
 
 ## Build, nạp
 
-- Cần Rust stable với target `thumbv7m-none-eabi` (mặc định trong `.cargo/config.toml`) và `arm-none-eabi-objcopy`
-  (`nap.py` tìm theo `ARM_TOOLCHAIN`, rồi toolchain của PlatformIO, rồi `PATH`).
+- Phiên bản Rust ghim trong `rust-toolchain.toml` (1.97.0, kèm target `thumbv7m-none-eabi`); target mặc định của
+  `cargo` ở `.cargo/config.toml`. Nâng Rust hay Embassy có chủ đích: build, `tools/kich_thuoc.py --kiem`, test, rồi cập
+  nhật số trong README các bài. Cần thêm `arm-none-eabi-objcopy` (`nap.py` tìm theo `ARM_TOOLCHAIN`, rồi toolchain của
+  PlatformIO, rồi `PATH`).
+- **Trước khi commit:** `cargo build --release`, `cargo test -p ak-boot --target <target của máy>`,
+  `cargo clippy --release -- -D warnings`, `python tools/kich_thuoc.py --kiem`. CI (`.github/workflows/ci.yml`) chạy
+  đủ bốn bước. Job `rust-proto` của ak-mcu-base cũng lấy repo này: đổi `ak-boot` hay `ak-ffi` là đổi firmware C.
+- Test tính chất ở `ak-boot/tests/tinh_chat.rs` (`proptest`, chỉ là dev-dependency, không vào firmware). Thấy file
+  `*.proptest-regressions` sinh ra khi test hỏng thì giữ lại và commit nếu lỗi là thật (proptest chạy lại ví dụ đó trước).
 - Nạp một bài: `python tools/nap.py <bài> --com <cổng>` (qua cổng COM, ~9 s) hoặc không `--com` để nạp ST-Link
   `mode=UR … -rst`; `--chi-build` để chỉ build. Test phần logic: `cargo test -p ak-boot --target <target của máy>`
   (ví dụ `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-gnu`).

@@ -4,6 +4,7 @@
 //!   - LED doi trang thai moi 300 ms
 //!   - coi keu "tich" moi giay
 //!   - man hinh OLED dem thoi gian, ve lai moi 100 ms
+//!
 //! Khong task nao phai doi task nao: moi cho `.await` la mot cho nhuong luot.
 
 #![no_std]

@@ -35,8 +35,8 @@ da chay 2 giay
 
 | | |
 |---|---|
-| Flash | 29 088 B (`ak-kit` dựng sẵn mọi phần cứng của kit — xem [rust-va-c.md](../docs/rust-va-c.md), mục 2.1) |
-| RAM tĩnh | 3,1 KB |
+| Flash | 29 192 B (`ak-kit` dựng sẵn mọi phần cứng của kit — xem [rust-va-c.md](../docs/rust-va-c.md), mục 2.1) |
+| RAM tĩnh | 3,2 KB |
 
 ## Đã kiểm trên kit (30/10/2026)
 

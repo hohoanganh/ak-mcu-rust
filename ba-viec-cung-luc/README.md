@@ -31,6 +31,6 @@ python tools/nap.py ba-viec-cung-luc
 
 | | |
 |---|---|
-| Flash | 32 328 B (`embedded-graphics` + hai font chiếm phần lớn) |
+| Flash | 32 404 B (`embedded-graphics` + hai font chiếm phần lớn) |
 | RAM tĩnh | 5,3 KB (hai bộ đệm khung OLED 1 KB mỗi cái) |
 | Vẽ một khung | ~1,9 ms (chỉ gửi đoạn cột đã đổi); khung đầu tiên 25 ms |
