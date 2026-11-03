@@ -1,0 +1,10 @@
+[package]
+name = "ak-hinh"
+version = "0.1.0"
+edition = "2021"
+description = "Phan ve man hinh OLED cua cac bai demo: khong phu thuoc chip, chay duoc tren may tinh de dung GIF"
+
+[dependencies]
+embedded-graphics = "0.8.2"
+heapless = "0.9.3"
+micromath = "2.1.0"

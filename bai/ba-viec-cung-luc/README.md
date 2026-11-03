@@ -1,0 +1,43 @@
+# Bài 2 — Ba việc cùng lúc, không cần RTOS
+
+<img src="../../docs/anh/bai2-ba-viec-cung-luc.gif" width="360" alt="Màn hình OLED của kit khi bài ba-viec-cung-luc chạy">
+
+*Màn hình OLED của kit, dựng từ chính mã vẽ của bài (`ak-hinh`).*
+
+**Câu chốt:** ba task, ba nhịp khác nhau, chung một lõi CPU — mỗi chỗ `.await` là một chỗ nhường lượt.
+
+| Task | Việc | Nhịp |
+|---|---|---|
+| `nhay_led` | đổi trạng thái LED | 300 ms |
+| `tich_tac` | còi kêu "tích" 15 ms | 1 s |
+| `dem_gio` | vẽ đồng hồ đếm lên OLED | 100 ms |
+
+## Nạp
+
+```bash
+python tools/nap.py ba-viec-cung-luc
+```
+
+## Quay clip (30–45 s)
+
+Còi mặc định tắt. Muốn có tiếng thì thêm `kit.coi.dat_am_luong(50);` ngay sau `ak_kit::init(spawner)` (1 = nhỏ
+nhất, 50 = to nhất).
+
+1. Cận cảnh kit, bật tiếng: LED nháy, còi tích tắc mỗi giây, số trên OLED chạy 0.1 s một lần — ba nhịp lệch nhau
+   rõ ràng.
+2. Chuyển sang mã nguồn, khoanh:
+   - dòng 25–27: ba lần `spawner.spawn(...)` — giao ba việc cho ba task;
+   - dòng 34, 42, 64: ba chỗ `Timer::after_...().await` với ba thời gian khác nhau;
+   - dòng 41: `coi.keu(2000, 15).await` — đang kêu cũng không chặn LED hay màn hình.
+3. Câu kết: "Trong C phải tự viết vòng lặp so thời gian cho từng việc, hoặc dùng RTOS. Ở đây mỗi việc là một hàm
+   đọc từ trên xuống."
+
+## Kích thước
+
+Đo 03/11/2026 với Rust 1.97.0 (ghim trong `rust-toolchain.toml`), sau khi `ak-kit` có màn hình PANIC, phần nạp qua cổng COM, watchdog và nhật ký sự cố.
+
+| | |
+|---|---|
+| Flash | 34 868 B (`embedded-graphics` + hai font chiếm phần lớn) |
+| RAM tĩnh | 5,4 KB (hai bộ đệm khung OLED 1 KB mỗi cái) |
+| Vẽ một khung | ~1,9 ms (chỉ gửi đoạn cột đã đổi); khung đầu tiên 25 ms |

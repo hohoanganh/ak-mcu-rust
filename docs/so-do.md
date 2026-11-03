@@ -67,7 +67,7 @@ flowchart TD
 
 Mã: [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs) (`init`, `nut_giua_dang_giu`, `che_do_nap`),
 [`ak-kit/src/su_co.rs`](../ak-kit/src/su_co.rs) (nhật ký sự cố, watchdog), bài 1
-[`hello-async/src/main.rs`](../hello-async/src/main.rs).
+[`hello-async/src/main.rs`](../bai/hello-async/src/main.rs).
 
 ## 3. Nhiều việc cùng lúc: kernel AK (C) và Embassy (Rust)
 
@@ -113,7 +113,7 @@ sequenceDiagram
     E->>L: chạy tiếp, đổi LED
 ```
 
-Mã: bài 2 [`ba-viec-cung-luc/src/main.rs`](../ba-viec-cung-luc/src/main.rs). So sánh chi tiết:
+Mã: bài 2 [`ba-viec-cung-luc/src/main.rs`](../bai/ba-viec-cung-luc/src/main.rs). So sánh chi tiết:
 [rust-va-c.md mục 1.2](rust-va-c.md#12-nhiều-việc-cùng-lúc).
 
 ## 4. Nạp bài mới qua cổng COM, chạy thử, quay lui
@@ -243,7 +243,7 @@ flowchart LR
     C ~~~ R
 ```
 
-Mã: bài 5 [`an-toan/src/main.rs`](../an-toan/src/main.rs), `panic` trong [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs),
+Mã: bài 5 [`an-toan/src/main.rs`](../bai/an-toan/src/main.rs), `panic` trong [`ak-kit/src/lib.rs`](../ak-kit/src/lib.rs),
 nhật ký sự cố trong [`ak-kit/src/su_co.rs`](../ak-kit/src/su_co.rs) và [`ak-boot/src/su_co.rs`](../ak-boot/src/su_co.rs).
 
 ## 9. Slave Modbus RTU với bộ tách yêu cầu Rust (`ak-modbus`)

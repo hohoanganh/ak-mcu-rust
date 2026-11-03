@@ -8,14 +8,20 @@ Firmware Rust trên AK MCU KIT (STM32L151), **chạy sau bootloader của
 [ak-mcu-base](https://github.com/hohoanganh/ak-mcu-base)**. Không thay ak-mcu-base: kit phải luôn quay về được firmware
 C bằng cách nạp lại `app.img` của bản C. Lộ trình: `docs/lo-trinh.md`.
 
-Workspace Cargo: mỗi thử nghiệm một thư mục (`blink/`…), `profile.release` khai ở `Cargo.toml` gốc, output ở `target/`.
+Workspace Cargo: mỗi bài một thư mục trong `bai/` (`bai/blink/`…), `profile.release` khai ở `Cargo.toml` gốc, output ở `target/`.
+
+Phần vẽ màn hình tách khỏi bài vào `ak-hinh` (không phụ thuộc chip): bài gọi `ve_*` hay `Ferris`, và cùng mã đó chạy trên
+máy tính. GIF trong README dựng bằng `examples/quay.rs` + `tools/demo_gif.py` (lệnh ở cuối README) — **sửa hình vẽ thì dựng
+lại GIF**. Bài 5 phải giữ `diem[chi_so]` ở **dòng 34** của `bai/an-toan/src/main.rs`: README, tài liệu và clip đều ghi
+`main.rs dong 34` (test `bai5_gay_panic_dung_o_dong_34` canh việc này; thêm hay bớt dòng phía trên thì sửa cả hằng
+`DONG_PANIC_BAI5` trong `quay.rs`).
 
 ## Bẫy đã gặp — đọc trước khi sửa `memory.x`, bảng vector hay thêm crate
 
 - **Bảng vector chỉ được ≤ 256 B.** Bootloader đặt `VTOR` ở `0x08003100` (256 B đầu vùng app là header ảnh), địa chỉ
   này chỉ căn 256 B. `cortex-m-rt` mặc định sinh 240 ngắt (bảng 1 KB, đòi căn 1 KB) → lỗi link
   `ERROR(cortex-m-rt): Interrupt vector table misalignment detected`. Không có HAL/PAC thì bật feature `device` của
-  `cortex-m-rt` và tự khai `__INTERRUPTS: [usize; 45]` (`blink/src/main.rs`, `device.x` để trống).
+  `cortex-m-rt` và tự khai `__INTERRUPTS: [usize; 45]` (`bai/blink/src/main.rs`, `device.x` để trống).
 - **PAC `stm32l1` (feature `stm32l151`) không cứu được:** nó khai bảng ngắt theo dòng dung lượng lớn, bảng vẫn vượt
   256 B. Theo dữ liệu chip của embassy (`stm32-data-generated`), cả `STM32L151CB` lẫn `STM32L151CB-A` có đúng
   **45 ngắt** → `embassy-stm32` với feature `stm32l151cb-a` ra bảng 244 B (đã kiểm: mọi bài Embassy chạy ở `0x08003100`).

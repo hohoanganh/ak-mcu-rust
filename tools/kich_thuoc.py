@@ -5,7 +5,7 @@
     python tools/kich_thuoc.py            in bang kich thuoc (Markdown)
     python tools/kich_thuoc.py --kiem     in bang, tra ma loi 1 neu co bai vi pham rang buoc
 
-Rang buoc (xem docs/so-do.md muc 1 va blink/README.md):
+Rang buoc (xem docs/so-do.md muc 1 va bai/blink/README.md):
 - bang vector o dung 0x08003100 va <= 256 B (256 B dau vung app la header anh);
 - RAM cua app bat dau tu 0x20000100 (dau RAM la .noinit cua bootloader);
 - toan bo flash nam trong vung APP (toi 0x08020000).
@@ -33,7 +33,14 @@ SHT_NOBITS = 8
 def cac_bai():
     """(thu muc, ten file chay) cua moi goi co src/main.rs, theo thu tu trong Cargo.toml goc."""
     goc = open(os.path.join(GOC, "Cargo.toml"), encoding="utf-8").read()
-    thanh_vien = re.findall(r'"([^"]+)"', re.search(r"members\s*=\s*\[([^\]]*)\]", goc).group(1))
+    thanh_vien = []
+    for m in re.findall(r'"([^"]+)"', re.search(r"members\s*=\s*\[([^\]]*)\]", goc).group(1)):
+        if m.endswith("/*"):  # "bai/*": moi thu muc con la mot goi
+            thu_tu = ["blink", "hello-async", "ba-viec-cung-luc", "nut-bam", "dong-ho", "an-toan", "cua-ferris"]
+            con = os.listdir(os.path.join(GOC, m[:-2]))
+            thanh_vien += [m[:-1] + t for t in sorted(con, key=lambda t: (thu_tu.index(t) if t in thu_tu else 99, t))]
+        else:
+            thanh_vien.append(m)
     for d in thanh_vien:
         if not os.path.isfile(os.path.join(GOC, d, "src", "main.rs")):
             continue

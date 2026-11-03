@@ -1,6 +1,6 @@
 # Lộ trình Rust trên AK MCU KIT
 
-> Viết 30/10/2026, lúc mới có `blink/`. Cùng ngày giai đoạn 0–2 đã xong: Embassy chạy sau bootloader, kit có 32 KB
+> Viết 30/10/2026, lúc mới có `bai/blink/`. Cùng ngày giai đoạn 0–2 đã xong: Embassy chạy sau bootloader, kit có 32 KB
 > RAM, chuỗi bài 1–6 chạy trên kit. Mỗi giai đoạn có **cổng quyết định**: chỉ đi
 > tiếp khi giai đoạn trước có số đo trên kit thật, không đi tiếp vì "đã lên kế hoạch".
 
@@ -15,7 +15,7 @@
 | | Tình trạng | Ý nghĩa cho kit |
 |---|---|---|
 | **Embassy** (`embassy-stm32`) | Có ví dụ chính thức cho STM32L1 trong repo embassy: `blinky`, `usart`, `spi`, `flash`, `eeprom`, `usb_serial`, dựng trên **`stm32l151cb-a`**; thư mục ví dụ còn được sửa ngày 19/10/2026 (driver flash hợp nhất) | Con đường chính. Có sẵn driver EEPROM — đúng chỗ bootloader để `boot_ctrl` |
-| Dữ liệu chip của embassy | `STM32L151CB` và `STM32L151CB-A` đều **45 ngắt** → bảng vector 244 B, vừa địa chỉ `0x08003100` | Bẫy bảng vector 1 KB của `blink/` không lặp lại với Embassy (cần kiểm bằng build) |
+| Dữ liệu chip của embassy | `STM32L151CB` và `STM32L151CB-A` đều **45 ngắt** → bảng vector 244 B, vừa địa chỉ `0x08003100` | Bẫy bảng vector 1 KB của `bai/blink/` không lặp lại với Embassy (cần kiểm bằng build) |
 | | `STM32L151CB` có 16 KB RAM, **`CB-A` có 32 KB** | Kit đọc ra device ID `0x429` (Cat.2), **đã kiểm 32 KB thật** trên kit 30/10/2026; ak-mcu-base mặc định 32K từ `9d23312` |
 | `stm32l1xx-hal` | Có, hỗ trợ L100/L151/L152/L162, ít được bảo trì hơn Embassy | Phương án dự phòng |
 | PAC `stm32l1` | Có (svd2rust); bảng ngắt khai theo dòng lớn, không link được ở `0x08003100` | Không dùng trực tiếp làm `rt` |
@@ -25,7 +25,7 @@
 ## Các giai đoạn
 
 ### 0. Nháy LED bằng thanh ghi — **xong (30/10/2026)**
-`blink/`: 1 604 B flash, chạy trên kit sau bootloader 1.4.0. Kit là STM32L151CB-A, **32 KB RAM** (đã kiểm), nên mục
+`bai/blink/`: 1 604 B flash, chạy trên kit sau bootloader 1.4.0. Kit là STM32L151CB-A, **32 KB RAM** (đã kiểm), nên mục
 "xác định RAM thật" của giai đoạn 1 đã xong.
 
 ### 1. Chạy được và nhìn được (½ ngày, cần kit) — **xong, trừ probe-rs**
@@ -46,7 +46,7 @@
 1. `blink-embassy/`: `embassy-stm32` (feature đúng chip, **bỏ feature `memory-x`** để giữ `memory.x` riêng ở
    `0x08003100` / `0x20000100`), `embassy-executor`, `embassy-time`.
 2. Console USART1 kiểu async: echo dòng lệnh, lệnh `ver`.
-3. **Đo:** flash, RAM tĩnh, mức stack, so với `blink/` và với ak-mcu-base (kernel + shell).
+3. **Đo:** flash, RAM tĩnh, mức stack, so với `bai/blink/` và với ak-mcu-base (kernel + shell).
 
 **Cổng:** bảng vector ≤ 256 B (kiểm bằng `arm-none-eabi-nm`), app Embassy chạy sau bootloader, tốn RAM bao nhiêu.
 RAM quá 50 % (trên 16 KB) thì cân nhắc dừng Embassy ở mức thử nghiệm.

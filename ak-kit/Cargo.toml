@@ -6,6 +6,7 @@ description = "Bo mach AK MCU KIT cho cac bai demo Rust: xung nhip, LED, cong CO
 
 [dependencies]
 ak-boot = { path = "../ak-boot" }
+ak-hinh = { path = "../ak-hinh" }
 embassy-executor = "0.10.0"
 embassy-stm32 = { version = "0.6.0", features = ["stm32l151cb-a", "time-driver-tim2", "exti", "unstable-pac"] }
 embassy-time = { version = "0.5.1", features = ["tick-hz-32_768"] }

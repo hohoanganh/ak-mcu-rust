@@ -20,18 +20,21 @@ và trả lời giống thư viện đó từng byte trên 20 000 yêu cầu ng�
 
 ## Các bài
 
-| Bài | Nội dung |
-|---|---|
-| 0 [`blink`](blink/) | Nháy LED bằng cách ghi thẳng thanh ghi, không thư viện |
-| 1 [`hello-async`](hello-async/) | Chờ mà không chặn: LED nháy và đếm giây cùng lúc |
-| 2 [`ba-viec-cung-luc`](ba-viec-cung-luc/) | Ba việc ba nhịp: LED, còi, đồng hồ trên OLED |
-| 3 [`nut-bam`](nut-bam/) | Chờ sự kiện: đàn ba phím |
-| 4 [`dong-ho`](dong-ho/) | Hai task nói chuyện qua channel: đồng hồ kim từ RTC |
-| 5 [`an-toan`](an-toan/) | Đọc vượt mảng: Rust dừng và báo đúng dòng |
-| 6 [`cua-ferris`](cua-ferris/) | Trò chơi Ferris hứng sao, 30 khung/giây |
+Tất cả bài nằm trong [`bai/`](bai/). Cột bên phải là màn hình OLED 128×64 của kit khi bài chạy.
+
+| Bài | Nội dung | Màn hình OLED |
+|---|---|---|
+| 0 [`blink`](bai/blink/) | Nháy LED bằng cách ghi thẳng thanh ghi, không thư viện | không dùng màn hình |
+| 1 [`hello-async`](bai/hello-async/) | Chờ mà không chặn: LED nháy và đếm giây cùng lúc | không dùng màn hình |
+| 2 [`ba-viec-cung-luc`](bai/ba-viec-cung-luc/) | Ba việc ba nhịp: LED, còi, đồng hồ trên OLED | <img src="docs/anh/bai2-ba-viec-cung-luc.gif" width="260" alt="Bài 2: đồng hồ đếm giây, LED 300 ms, còi 1 s"> |
+| 3 [`nut-bam`](bai/nut-bam/) | Chờ sự kiện: đàn ba phím | <img src="docs/anh/bai3-nut-bam.gif" width="260" alt="Bài 3: bấm nút hiện nốt DO, MI, SOL và số lần bấm"> |
+| 4 [`dong-ho`](bai/dong-ho/) | Hai task nói chuyện qua channel: đồng hồ kim từ RTC | <img src="docs/anh/bai4-dong-ho.gif" width="260" alt="Bài 4: đồng hồ kim và giờ số"> |
+| 5 [`an-toan`](bai/an-toan/) | Đọc vượt mảng: Rust dừng và báo đúng dòng | <img src="docs/anh/bai5-an-toan.gif" width="260" alt="Bài 5: đọc diem[5] ngoài mảng, màn hình PANIC main.rs dòng 34"> |
+| 6 [`cua-ferris`](bai/cua-ferris/) | Trò chơi Ferris hứng sao, 30 khung/giây | <img src="docs/anh/bai6-cua-ferris.gif" width="260" alt="Bài 6: Ferris chạy hứng sao rơi"> |
 
 Phần cứng của kit (LED, còi, OLED, nút, RTC, cổng COM) gói sẵn trong [`ak-kit`](ak-kit/src/lib.rs), nên mỗi bài chỉ
-còn đúng ý cần dạy.
+còn đúng ý cần dạy. Phần vẽ màn hình tách riêng trong [`ak-hinh`](ak-hinh/) (không phụ thuộc chip): cùng mã đó chạy trên
+kit và chạy trên máy tính để dựng GIF, nên hình trong bảng là hình bài thật sự vẽ ra.
 
 ## Chạy thử
 
@@ -52,3 +55,10 @@ RESET để vào chế độ nạp, rồi nạp bằng ST-Link.
 - [Sơ đồ luồng chạy](docs/so-do.md): bộ nhớ, khởi động, async, nạp và quay lui, Rust trong firmware C.
 - [Lộ trình](docs/lo-trinh.md): đã làm gì, sắp làm gì.
 - [Bẫy kỹ thuật](CLAUDE.md): bảng vector 256 B, RAM, I2C, ST-Link…
+
+Dựng lại GIF sau khi sửa phần vẽ (cần Python + `pillow`):
+
+```bash
+cargo run --release -p ak-hinh --example quay --target x86_64-pc-windows-gnu -- target/quay
+python tools/demo_gif.py target/quay docs/anh
+```
