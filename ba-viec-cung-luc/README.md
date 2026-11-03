@@ -30,10 +30,10 @@ nhất, 50 = to nhất).
 
 ## Kích thước
 
-Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+Đo 03/11/2026 với Rust 1.97.0 (ghim trong `rust-toolchain.toml`), sau khi `ak-kit` có màn hình PANIC, phần nạp qua cổng COM, watchdog và nhật ký sự cố.
 
 | | |
 |---|---|
-| Flash | 34 820 B (`embedded-graphics` + hai font chiếm phần lớn) |
+| Flash | 34 868 B (`embedded-graphics` + hai font chiếm phần lớn) |
 | RAM tĩnh | 5,4 KB (hai bộ đệm khung OLED 1 KB mỗi cái) |
 | Vẽ một khung | ~1,9 ms (chỉ gửi đoạn cột đã đổi); khung đầu tiên 25 ms |

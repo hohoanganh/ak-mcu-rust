@@ -9,7 +9,7 @@
 
 | | C (ak-mcu-base) | Rust (ak-mcu-rust, Embassy) |
 |---|---|---|
-| Chạy trên chip nhỏ | ✓ | ✓ — bài lớn nhất 37 KB flash, 5,3 KB RAM |
+| Chạy trên chip nhỏ | ✓ | ✓ — bài lớn nhất 39 KB flash, 5,3 KB RAM |
 | Nhiều việc cùng lúc | kernel AK: task + message + timer | `async`/`.await`, mỗi việc là một hàm đọc từ trên xuống |
 | Đọc vượt mảng | đọc rác, chạy tiếp | dừng ngay, báo đúng tệp và dòng |
 | Lỗi bộ nhớ, tranh chấp dữ liệu | phát hiện khi chạy (nếu may) | phần lớn bị chặn khi biên dịch |
@@ -192,12 +192,12 @@ So cho công bằng: bản C cũng test mất điện kỹ. `tests/test_fw.c` c�
 | Bài | Nội dung | Flash | RAM tĩnh |
 |---|---|---|---|
 | 0 `blink` | ghi thẳng thanh ghi, không thư viện | 1 604 B | 4 B |
-| 1 `hello-async` | LED + đếm giây, 2 task | 31 584 B | 3 320 B |
-| 2 `ba-viec-cung-luc` | LED + còi + OLED, 3 task | 34 820 B | 5 504 B |
-| 3 `nut-bam` | đàn ba phím, `select3` | 33 852 B | 3 336 B |
-| 4 `dong-ho` | RTC + đồng hồ kim, channel | 39 488 B | 5 464 B |
-| 5 `an-toan` | đọc vượt mảng, PANIC | 34 156 B | 3 360 B |
-| 6 `cua-ferris` | trò chơi 30 khung/giây | 36 500 B | 3 488 B |
+| 1 `hello-async` | LED + đếm giây, 2 task | 31 616 B | 3 320 B |
+| 2 `ba-viec-cung-luc` | LED + còi + OLED, 3 task | 34 868 B | 5 504 B |
+| 3 `nut-bam` | đàn ba phím, `select3` | 33 900 B | 3 336 B |
+| 4 `dong-ho` | RTC + đồng hồ kim, channel | 39 532 B | 5 464 B |
+| 5 `an-toan` | đọc vượt mảng, PANIC | 34 204 B | 3 360 B |
+| 6 `cua-ferris` | trò chơi 30 khung/giây | 36 544 B | 3 488 B |
 
 Đo bằng `python tools/kich_thuoc.py` sau `cargo build --release` (Rust 1.97.0, `opt-level = "s"`). CI chạy lại mỗi lần
 push và báo lỗi nếu bảng vector vượt 256 B hay RAM đè lên vùng của bootloader.

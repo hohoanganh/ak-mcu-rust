@@ -31,11 +31,11 @@ da chay 2 giay
 
 ## Kích thước
 
-Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+Đo 03/11/2026 với Rust 1.97.0 (ghim trong `rust-toolchain.toml`), sau khi `ak-kit` có màn hình PANIC, phần nạp qua cổng COM, watchdog và nhật ký sự cố.
 
 | | |
 |---|---|
-| Flash | 31 584 B (`ak-kit` dựng sẵn mọi phần cứng của kit — xem [rust-va-c.md](../docs/rust-va-c.md), mục 2.1) |
+| Flash | 31 616 B (`ak-kit` dựng sẵn mọi phần cứng của kit — xem [rust-va-c.md](../docs/rust-va-c.md), mục 2.1) |
 | RAM tĩnh | 3,2 KB |
 
 ## Đã kiểm trên kit (30/10/2026)

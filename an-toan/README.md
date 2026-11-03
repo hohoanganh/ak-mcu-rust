@@ -45,11 +45,11 @@ python tools/nap.py an-toan
 
 ## Kích thước
 
-Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+Đo 03/11/2026 với Rust 1.97.0 (ghim trong `rust-toolchain.toml`), sau khi `ak-kit` có màn hình PANIC, phần nạp qua cổng COM, watchdog và nhật ký sự cố.
 
 | | |
 |---|---|
-| Flash | 34 156 B |
+| Flash | 34 204 B |
 | RAM tĩnh | 3,3 KB |
 
 ## Trạng thái

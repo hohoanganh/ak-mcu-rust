@@ -26,11 +26,11 @@ python tools/nap.py dong-ho
 
 ## Kích thước
 
-Đo 30/10/2026, sau khi `ak-kit` có màn hình PANIC và phần nạp qua cổng COM.
+Đo 03/11/2026 với Rust 1.97.0 (ghim trong `rust-toolchain.toml`), sau khi `ak-kit` có màn hình PANIC, phần nạp qua cổng COM, watchdog và nhật ký sự cố.
 
 | | |
 |---|---|
-| Flash | 39 488 B (đồ họa + sin/cos của `micromath`) |
+| Flash | 39 532 B (đồ họa + sin/cos của `micromath`) |
 | RAM tĩnh | 5,3 KB |
 
 ## Trạng thái
