@@ -1,6 +1,7 @@
 # ak-mcu-rust — firmware Rust trên AK MCU KIT
 
 <p align="center">
+  <a href="https://github.com/hohoanganh/ak-mcu-rust/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-0366d6" alt="license MIT"></a>
   <a href="https://github.com/hohoanganh/ak-mcu-rust/actions/workflows/ci.yml"><img src="https://github.com/hohoanganh/ak-mcu-rust/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/hohoanganh/ak-mcu-rust/commits/main"><img src="https://img.shields.io/github/last-commit/hohoanganh/ak-mcu-rust?label=commit%20cu%E1%BB%91i" alt="last commit"></a>
   <a href="https://github.com/hohoanganh/ak-mcu-rust/blob/main/rust-toolchain.toml"><img src="https://img.shields.io/badge/Rust-1.97%20%C2%B7%20no__std-000000?logo=rust" alt="Rust 1.97 no_std"></a>
@@ -75,3 +76,7 @@ Dựng lại GIF sau khi sửa phần vẽ (cần Python + `pillow`):
 cargo run --release -p ak-hinh --example quay --target x86_64-pc-windows-gnu -- target/quay
 python tools/demo_gif.py target/quay docs/anh
 ```
+
+## Giấy phép
+
+[MIT](LICENSE). Các crate Rust bên ngoài (Embassy, embedded-graphics…) theo giấy phép riêng của chúng.
