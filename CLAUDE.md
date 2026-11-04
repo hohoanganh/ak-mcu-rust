@@ -99,5 +99,5 @@ lại GIF**. Bài 5 phải giữ `diem[chi_so]` ở **dòng 34** của `bai/an-t
 
 - Repo cá nhân, công khai: không đưa tên công ty, liên hệ, tên sản phẩm thương mại vào mã và tài liệu.
 - Không commit output build (`target/`, `*.bin`, `*.img`).
-- Hàng huy hiệu đầu `README.md` có số đếm tĩnh: bài (`bai/`), crate (thư viện trong `members` của `Cargo.toml`),
-  phiên bản Rust (`rust-toolchain.toml`). Thêm bài, crate hay nâng Rust thì sửa huy hiệu.
+- Huy hiệu đầu `README.md`: một hàng, chữ tiếng Anh, kiểu `flat-square`, nhãn nền `0b0f14`, nội dung `d9e1ea`; không đặt số
+  đếm vào huy hiệu. Huy hiệu Rust ghi phiên bản trong `rust-toolchain.toml`: nâng Rust thì sửa nó.
